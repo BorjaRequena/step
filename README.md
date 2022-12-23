@@ -7,5 +7,5 @@ We have originally developed this library for the paper **Inferring
 pointwise diffusion properties of single trajectories with deep
 learning**.
 
-The repository is still under construction though. We will fill in the
+The repository is still under construction. We will fill in the
 tutorials and format the documentation after the new year :)
