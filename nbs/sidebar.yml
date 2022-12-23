@@ -1,0 +1,13 @@
+website:
+  sidebar:
+    contents:
+      - index.ipynb
+      - section: Documentation
+        contents:
+          - lib/00_data.ipynb
+          - lib/01_models.ipynb
+          - lib/03_baselines.ipynb
+          - lib/04_utils.ipynb
+      - section: Tutorials
+        href: tutorials/index_tutorials.ipynb
+        contents:
