@@ -7,7 +7,7 @@ website:
           - source/00_data.ipynb
           - source/01_models.ipynb
           - source/03_baselines.ipynb
-          - source/04_utils.ipynb
+          - source/02_utils.ipynb
       - section: Tutorials
         href: tutorials/index_tutorials.ipynb
         contents:
