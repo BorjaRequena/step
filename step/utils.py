@@ -13,9 +13,9 @@ import numpy as np
 import ruptures as rpt
 from tqdm.auto import tqdm
 from fastcore.all import *
+import matplotlib.colors as clr
 from fastai.metrics import F1ScoreMulti
 from fastai.torch_core import tensor, to_detach
-
 from .data import DATA_PATH, get_andi_valid_dls
 
 # %% ../nbs/source/02_utils.ipynb 4
@@ -307,16 +307,24 @@ colors = [color_dict[k]['medium'] for k in color_order]
 colors_light = [color_dict[k]['light'] for k in color_order]
 colors_dark = [color_dict[k]['dark'] for k in color_order]
 
-import matplotlib.colors as clr
-cmap_hist1 = clr.LinearSegmentedColormap.from_list('custom cm', ['w',
-                                                                 color_dict['blue']['light'],
-                                                                 color_dict['blue']['dark']], N=256)
-cmap_hist2 = clr.LinearSegmentedColormap.from_list('custom cm', ['w',
-                                                                 color_dict['orange']['light'],
-                                                                 color_dict['orange']['dark']], N=256)
-cmap_points = clr.LinearSegmentedColormap.from_list('custom cm', [color_dict['yellow']['light'],
-                                                                  color_dict['purple']['light'],
-                                                                  color_dict['blue']['medium']], N=256)
+cmap_hist1 = clr.LinearSegmentedColormap.from_list(
+    'custom cm', ['w', 
+                  color_dict['blue']['light'],
+                  color_dict['blue']['dark']],
+                  N=256
+)
+cmap_hist2 = clr.LinearSegmentedColormap.from_list(
+    'custom cm', ['w', 
+                  color_dict['orange']['light'],
+                  color_dict['orange']['dark']],
+                  N=256
+)
+cmap_points = clr.LinearSegmentedColormap.from_list(
+    'custom cm', [color_dict['yellow']['light'], 
+                  color_dict['purple']['light'],
+                  color_dict['blue']['medium']],
+                  N=256
+)
 
 fig_size = 4
 linewidth = 2
