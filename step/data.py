@@ -347,7 +347,7 @@ def get_segmentation_dls(
     shuffle:bool=True,        # Shuffle the dataset.
     tfm_y:Callable|None=None, # Transformation to apply to the target, e.g., `torch.log10`.
     n_change:int|str=1,       # Number of changes in the trajectories, e.g., '1_to_4'.
-    bm:bool=False             # Is it Brownian motion (False for anomalous diffusion)
+    bm:bool=False,            # Is it Brownian motion (False for anomalous diffusion)
     **kwargs
     )->DataLoaders:
     "Obtain `DataLoaders` from dataset filtered by `models` and `exps` to predict `target`."
