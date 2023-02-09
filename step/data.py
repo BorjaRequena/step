@@ -206,6 +206,7 @@ def create_andi_segmentation_dataset(
     noise:list=[0.1, 0.5, 1.],      # Noise standard deviation
     path:Path|str|None=None,        # Path to save the data
     save:bool=True,                 # Save or not the data
+    name:str="",                    # Optional name for the data set
     **kwargs
     )->pd.DataFrame:
     "Creates a dataset for trajectory segmentation of anomalous diffusion."
@@ -216,13 +217,15 @@ def create_andi_segmentation_dataset(
     trajectories, labels, change_points = combine_trajectories(datasets, dim, **kwargs)
     trajectories, noise_amplitudes = add_localization_noise(trajectories, noise)
     seg_dataset = trajs2df(trajectories, labels, change_points, dim, noise_amplitudes)
-    save_path = DATA_PATH/get_andids_fname(n_change_points, max_t, dim) if path is None else path
-    if save: seg_dataset.to_pickle(save_path)
+    path = DATA_PATH/get_andids_fname(n_change_points, max_t, dim, name) if path is None else path
+    if save: seg_dataset.to_pickle(path)
     return seg_dataset
 
-def get_andids_fname(n_change_points, max_t, dim):
+def get_andids_fname(n_change_points, max_t, dim, name=""):
     "Returns standardized file name for segmentation dataset."
-    return f"segds_{n_change_points}changes_T{max_t}_dim{dim}.pkl"
+    fname = f"segds_{n_change_points}changes_T{max_t}_dim{dim}"
+    if len(name) > 0: fname += f"_{name}"
+    return fname + ".pkl"
 
 # %% ../nbs/source/00_data.ipynb 30
 def brownian_motion(n_traj, max_t, D, dim=1, dt=1):
@@ -252,6 +255,7 @@ def create_bm_segmentation_dataset(
     Ds:Iterable|None=None,   # Diffusion coefficients to consider defaults to logspace(-3, 3)
     path:Path|str|None=None, # Path to save the data
     save:bool=True,          # Save or not the data
+    name:str="",             # Optional name for the data set
     **kwargs
     )->pd.DataFrame:
     "Creates a segmentation dataset to tell between diffusion coefficients."
@@ -260,13 +264,15 @@ def create_bm_segmentation_dataset(
     datasets = [create_bm_trajectories(n_traj, max_t, Ds=Ds, dim=dim) for _ in range(n_ds)]
     trajectories, labels, change_points = combine_trajectories(datasets, dim, **kwargs)
     seg_dataset = trajs2df(trajectories, labels, change_points, dim)
-    save_path = DATA_PATH/get_bmds_fname(n_change_points, max_t, dim) if path is None else path
-    if save: seg_dataset.to_pickle(save_path)
+    path = DATA_PATH/get_bmds_fname(n_change_points, max_t, dim, name) if path is None else path
+    if save: seg_dataset.to_pickle(path)
     return seg_dataset
 
-def get_bmds_fname(n_change_points, max_t, dim):
+def get_bmds_fname(n_change_points, max_t, dim, name=""):
     "Returns consistent file name for segmentation dataset."
-    return f"bmds_{n_change_points}changes_T{max_t}_dim{dim}.pkl"
+    fname = f"bmds_{n_change_points}changes_T{max_t}_dim{dim}"
+    if len(name) > 0: fname += f"_{name}"
+    return fname + ".pkl"
 
 # %% ../nbs/source/00_data.ipynb 42
 def create_fixed_attm_trajs(n_traj, max_t, sigma, gamma):
@@ -323,10 +329,10 @@ def _txt2df(path):
     df.to_pickle(path.with_suffix(".pkl"))
 
 # %% ../nbs/source/00_data.ipynb 60
-def load_dataset(n_change=1, max_t=200, dim=1, path=None, bm=False):
+def load_dataset(n_change=1, max_t=200, dim=1, name="", path=None, bm=False):
     "Loads dataset according to `n_change`, `max_t` and `dim` or straight from `path`."
     name_fn = get_bmds_fname if bm else get_andids_fname
-    load_path = DATA_PATH/name_fn(n_change, max_t, dim) if path is None else path
+    load_path = DATA_PATH/name_fn(n_change, max_t, dim, name) if path is None else path
     return pd.read_pickle(load_path)
 
 # %% ../nbs/source/00_data.ipynb 61
@@ -341,10 +347,12 @@ def get_segmentation_dls(
     shuffle:bool=True,        # Shuffle the dataset.
     tfm_y:Callable|None=None, # Transformation to apply to the target, e.g., `torch.log10`.
     n_change:int|str=1,       # Number of changes in the trajectories, e.g., '1_to_4'.
+    bm:bool=False             # Is it Brownian motion (False for anomalous diffusion)
     **kwargs
     )->DataLoaders:
     "Obtain `DataLoaders` from dataset filtered by `models` and `exps` to predict `target`."
-    ds = load_dataset(**kwargs)
+    ds = load_dataset(bm=bm, **kwargs)
+    if bm: target = 'y_exp'
     if models is not None or exps is not None: ds = _filter_dataset(ds, models, exps, n_change)
     if size is not None and size <= ds.shape[0]: ds = _subsample_dataset(ds, size)
     x = ds['x'].map(partial(torch.transpose, dim0=1, dim1=0))
