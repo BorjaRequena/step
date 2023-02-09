@@ -11,3 +11,5 @@ website:
       - section: Tutorials
         href: tutorials/index_tutorials.ipynb
         contents:
+          - tutorials/00_model_training.ipynb
+          - tutorials/01_analysis_bm.ipynb

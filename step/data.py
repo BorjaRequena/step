@@ -2,10 +2,10 @@
 
 # %% auto 0
 __all__ = ['ROOT', 'DATA_PATH', 'FIG_PATH', 'MODEL_PATH', 'MODEL_DATA', 'DEFAULT_TOKEN', 'combine_trajectories', 'trajs2df',
-           'create_andi_trajectories', 'add_localization_noise', 'create_andi_segmentation_dataset', 'brownian_motion',
-           'create_bm_trajectories', 'create_bm_segmentation_dataset', 'create_fixed_attm_trajs', 'combine_datasets',
-           'load_andi_data', 'load_dataset', 'get_segmentation_dls', 'get_transformer_dls', 'SegmentationTransform',
-           'get_andi_valid_dls']
+           'create_andi_trajectories', 'add_localization_noise', 'create_andi_segmentation_dataset', 'get_andids_fname',
+           'brownian_motion', 'create_bm_trajectories', 'create_bm_segmentation_dataset', 'get_bmds_fname',
+           'create_fixed_attm_trajs', 'combine_datasets', 'load_andi_data', 'load_dataset', 'get_segmentation_dls',
+           'get_transformer_dls', 'SegmentationTransform', 'get_andi_valid_dls']
 
 # %% ../nbs/source/00_data.ipynb 2
 import os
@@ -216,11 +216,11 @@ def create_andi_segmentation_dataset(
     trajectories, labels, change_points = combine_trajectories(datasets, dim, **kwargs)
     trajectories, noise_amplitudes = add_localization_noise(trajectories, noise)
     seg_dataset = trajs2df(trajectories, labels, change_points, dim, noise_amplitudes)
-    save_path = DATA_PATH/_get_segds_fname(n_change_points, max_t, dim) if path is None else path
+    save_path = DATA_PATH/get_andids_fname(n_change_points, max_t, dim) if path is None else path
     if save: seg_dataset.to_pickle(save_path)
     return seg_dataset
 
-def _get_segds_fname(n_change_points, max_t, dim):
+def get_andids_fname(n_change_points, max_t, dim):
     "Returns standardized file name for segmentation dataset."
     return f"segds_{n_change_points}changes_T{max_t}_dim{dim}.pkl"
 
@@ -260,12 +260,12 @@ def create_bm_segmentation_dataset(
     datasets = [create_bm_trajectories(n_traj, max_t, Ds=Ds, dim=dim) for _ in range(n_ds)]
     trajectories, labels, change_points = combine_trajectories(datasets, dim, **kwargs)
     seg_dataset = trajs2df(trajectories, labels, change_points, dim)
-    save_path = DATA_PATH/_get_bmds_fname(n_change_points, max_t, dim) if path is None else path
+    save_path = DATA_PATH/get_bmds_fname(n_change_points, max_t, dim) if path is None else path
     if save: seg_dataset.to_pickle(save_path)
     return seg_dataset
 
-def _get_bmds_fname(n_change_points, max_t, dim):
-    "Returns standardized file name for segmentation dataset."
+def get_bmds_fname(n_change_points, max_t, dim):
+    "Returns consistent file name for segmentation dataset."
     return f"bmds_{n_change_points}changes_T{max_t}_dim{dim}.pkl"
 
 # %% ../nbs/source/00_data.ipynb 42
@@ -325,7 +325,7 @@ def _txt2df(path):
 # %% ../nbs/source/00_data.ipynb 60
 def load_dataset(n_change=1, max_t=200, dim=1, path=None, bm=False):
     "Loads dataset according to `n_change`, `max_t` and `dim` or straight from `path`."
-    name_fn = _get_bmds_fname if bm else _get_segds_fname
+    name_fn = get_bmds_fname if bm else get_andids_fname
     load_path = DATA_PATH/name_fn(n_change, max_t, dim) if path is None else path
     return pd.read_pickle(load_path)
 
