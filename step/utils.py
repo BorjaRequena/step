@@ -4,9 +4,9 @@
 __all__ = ['color_order', 'color_dict', 'colors', 'colors_light', 'colors_dark', 'cmap_hist1', 'cmap_hist2', 'cmap_points',
            'fig_size', 'linewidth', 'alpha_grid', 'scatter_size', 'D_units', 'lengths_from_cps', 'split_tensor',
            'get_displacements', 'fit_segments', 'find_change_points', 'get_splits', 'change_points_from_splits',
-           'get_split_classes', 'majority_vote', 'abundance', 'post_process_prediction', 'evaluate_cp_prediction',
-           'assign_changepoints', 'jaccard_index', 'eval_andi_metrics', 'validate_andi_1', 'validate_andi_3_models',
-           'validate_andi_3_alpha']
+           'get_split_classes', 'majority_vote', 'abundance', 'post_process_prediction', 'mean_absolute_error',
+           'mean_relative_error', 'evaluate_cp_prediction', 'assign_changepoints', 'jaccard_index', 'eval_andi_metrics',
+           'validate_andi_1', 'validate_andi_3_models', 'validate_andi_3_alpha']
 
 # %% ../nbs/source/02_utils.ipynb 2
 import torch
@@ -181,6 +181,16 @@ def _merge_edge(splits):
         return _merge_left(splits, idx_r) if torch.randint(2, (1,)) else _merge_right(splits, 0)
 
 # %% ../nbs/source/02_utils.ipynb 11
+def mean_absolute_error(pred, true):
+    "Mean absolute error between `pred` and `true`."
+    return (pred - true).abs().mean()
+
+def mean_relative_error(pred, true, base=10):
+    "Mean relative error assuming `pred` and `true` in log_base."
+    error = pred - true
+    return (base**error - 1).abs().mean()
+
+# %% ../nbs/source/02_utils.ipynb 12
 def evaluate_cp_prediction(true, pred, changepoint_threshold=5):
     "Evaluates the change point prediction."
     true_positive = 0
@@ -215,7 +225,7 @@ def jaccard_index(true_positive, false_positive, false_negative):
     "Computes the Jaccard index a.k.a. Tanimoto index."
     return true_positive/(true_positive + false_positive + false_negative)
 
-# %% ../nbs/source/02_utils.ipynb 13
+# %% ../nbs/source/02_utils.ipynb 14
 def eval_andi_metrics(dls, model):
     "Evaluates model in validation set in order to obtain AnDi challenge metrics."
     f1_score = F1ScoreMulti(average='micro')
@@ -288,7 +298,7 @@ def validate_andi_3_alpha(m, dim=1, task=3, **kwargs):
             #dim; cp; model_0; alpha_0; model_1; alpha_1
             f.write(f'{int(dim)}; {cp}; 0; {alpha_0}; 0; {alpha_1}\n')
 
-# %% ../nbs/source/02_utils.ipynb 15
+# %% ../nbs/source/02_utils.ipynb 16
 color_order = ['blue', 'orange', 'yellow', 'purple', 'green']
 color_dict = {
     'blue':   {'dark': (0.2745098, 0.4, 0.6),
