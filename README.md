@@ -7,26 +7,47 @@ STEP - pointwise diffusion characterization
 
 STEP is a machine learning model able to predict the diffusion
 properties of a pointwise level. This means that STEP produces a
-prediction for every frame of an input trajectory, leveraging multiple
+prediction for every frame of the input trajectory, leveraging multiple
 ML blocks to account for the different properties normal and anomalous
 diffusion trajectories have. The model was originally developed for the
 [Inferring pointwise diffusion properties of single trajectories with
-deep learning](www.arxiv.org).
+deep learning](https://arxiv.org/abs/2302.00410).
 
 The repository is still under construction though. We will fill in the
 tutorials and format the documentation after the initial submission. :)
 
 # Cite us
 
-If you use this library, please cite us!
+If you use this library, please cite us! We would appreciate both a
+citation to the library and to our original work.
+
+To cite the original work:
+
+    @misc{Requena2023STEP,
+      author    = {Requena, Borja and Mas\'o, Sergi and Bertran, Joan and
+                   Lewenstein, Maciej and Manzo, Carlo and Mu{\~n}oz-Gil, Gorka},
+      title     = {Inferring pointwise diffusion properties of single
+                   trajectories with deep learning},
+      doi       = {10.48550/ARXIV.2302.00410},
+      url       = {https://arxiv.org/abs/2302.00410},
+      publisher = {arXiv},
+      year      = {2023},
+      keywords  = {Soft Condensed Matter (cond-mat.soft),
+                   Biological Physics (physics.bio-ph),
+                   Data Analysis, Statistics and Probability (physics.data-an),
+                   Quantitative Methods (q-bio.QM), FOS: Physical sciences,
+                   FOS: Biological sciences, FOS: Biological sciences},
+      copyright = {Creative Commons Attribution Share Alike 4.0 International}
+    }
+
+To cite the library:
 
     @software{Requena2022step,
-      author       = {Requena, Borja and
-                      Mu{\~n}oz-Gil, Gorkal},
-      title        = {BorjaRequena/step},
-      month        = dec,
-      year         = 2022,
-      publisher    = {Zenodo},
-      doi          = {10.5281/zenodo.7480413},
-      url          = {https://doi.org/10.5281/zenodo.7480413}
+      author    = {Requena, Borja and Mu{\~n}oz-Gil, Gorkal},
+      title     = {BorjaRequena/step},
+      month     = dec,
+      year      = 2022,
+      publisher = {Zenodo},
+      doi       = {10.5281/zenodo.7480413},
+      url       = {https://doi.org/10.5281/zenodo.7480413}
     }
