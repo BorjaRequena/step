@@ -5,16 +5,17 @@ STEP - pointwise diffusion characterization
 
 <a href="https://doi.org/10.5281/zenodo.7480413"><img src="https://zenodo.org/badge/DOI/10.5281/zenodo.7480413.svg" alt="DOI"></a>
 
-STEP is a machine learning model able to predict the diffusion
-properties of a pointwise level. This means that STEP produces a
-prediction for every frame of the input trajectory, leveraging multiple
-ML blocks to account for the different properties normal and anomalous
-diffusion trajectories have. The model was originally developed for the
+STEP is a machine learning pipeline to study time-dependent diffusion
+properties. STEP predicts the diffusion properties of input trajectories
+at every time step, allowing us to see where changes in the diffusive
+behaviour occur (if it changes).
+
+The method was originally developed for the paper
 [Inferring pointwise diffusion properties of single trajectories with
 deep learning](https://arxiv.org/abs/2302.00410).
 
-The repository is still under construction though. We will fill in the
-tutorials and format the documentation after the initial submission. :)
+The repository is still under construction. We will provide the tutorials
+and the trained models to reproduce the experimental results upon paper acceptance.
 
 # Cite us
 
@@ -43,7 +44,7 @@ To cite the original work:
 To cite the library:
 
     @software{Requena2022step,
-      author    = {Requena, Borja and Mu{\~n}oz-Gil, Gorkal},
+      author    = {Requena, Borja and Mu{\~n}oz-Gil, Gorka},
       title     = {BorjaRequena/step},
       month     = dec,
       year      = 2022,
