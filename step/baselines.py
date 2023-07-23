@@ -22,7 +22,7 @@ def tamsd(
 # %% ../nbs/source/03_baselines.ipynb 6
 def diffusion_coefficient_tamsd(
     x:Tensor,                # Input trajectory of shape [length, dim]  
-    t_lag:Iterable=[2, 3, 4] # t-lags to consider for the fit
+    t_lag:Iterable=[1, 2]    # t-lags to consider for the fit. [1, 2] is optimal for Brownian motion
     )->float:                # Diffusion coefficient
     "Estimates the diffusion coefficient fitting the `tmsd` for different `dt`."
     tmsds = [tamsd(x, dt) for dt in t_lag]

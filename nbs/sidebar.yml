@@ -14,3 +14,4 @@ website:
           - tutorials/00_model_training.ipynb
           - tutorials/01_analysis_bm.ipynb
           - tutorials/02_analysis_andi.ipynb
+          - tutorials/03_anomalous_from_normal.ipynb
