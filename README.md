@@ -5,10 +5,10 @@
 <a href="https://doi.org/10.5281/zenodo.7480413"><img src="https://zenodo.org/badge/DOI/10.5281/zenodo.7480413.svg" alt="DOI"></a>
 </p>
 <p style="text-align:center">
-<a href=\"#getting-started">Get started</a> \|
-<a href=\"https://borjarequena.github.io/step/">Documentation</a> \|
-<a href=\"https://borjarequena.github.io/step/tutorials/index_tutorials.html">Tutorials</a>
-\| <a href=\"#cite-us\">Cite us</a>
+<a href="#getting-started">Get started</a> \|
+<a href="https://borjarequena.github.io/step/">Documentation</a> \|
+<a href="https://borjarequena.github.io/step/tutorials/index_tutorials.html">Tutorials</a>
+\| <a href="#cite-us\">Cite us</a>
 </p>
 
 STEP is a machine learning pipeline to study time-dependent diffusion
