@@ -1,5 +1,6 @@
 project:
   type: website
+  output-dir: _docs
 
 format:
   html:
@@ -8,10 +9,16 @@ format:
     toc: true
 
 website:
+  title: "STEP"
+  site-url: "https://BorjaRequena.github.io/step"
+  description: "Diffusion properties at every time step"
+  repo-branch: main
+  repo-url: "https://github.com/BorjaRequena/step"
   twitter-card: true
   open-graph: true
   repo-actions: [issue]
-  navbar:
+  navbar:    
+    logo: logo.png
     background: primary
     search: true
     right:
@@ -20,5 +27,19 @@ website:
 
   sidebar:
     style: floating
-
-metadata-files: [nbdev.yml, sidebar.yml]
+    collapse-level: 1
+    contents:
+      - index.ipynb
+      - section: Documentation
+        contents:
+          - source/00_data.ipynb
+          - source/01_models.ipynb
+          - source/03_baselines.ipynb
+          - source/02_utils.ipynb
+      - section: Tutorials
+        href: tutorials/index_tutorials.ipynb
+        contents:
+          - tutorials/00_model_training.ipynb
+          - tutorials/01_analysis_bm.ipynb
+          - tutorials/02_analysis_andi.ipynb
+          - tutorials/03_anomalous_from_normal.ipynb
