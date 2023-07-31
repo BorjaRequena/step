@@ -35,7 +35,7 @@ trajectories is a challenging task, due to their stochastic nature and
 other associated technical drawbacks, as for example the presence of
 noise in their acquisition. Furthermore, we often encounter changes in
 the motion properties through time, which adds on to the complexity.
-Typically, these changes are associated with to physical changes of the
+Typically, these changes are associated to physical changes of the
 tracked particles (from animals in the wild to proteins in a cell) but
 also to their interaction with other components in their environments.
 
