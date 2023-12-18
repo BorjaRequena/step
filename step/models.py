@@ -280,10 +280,10 @@ class XResAttn(Module):
     "Xresnet blocks with attention at the end."
     def __init__(self, dim, n_class=5, conv_blocks=[1, 1], block=ResBlock, block_szs=[64, 128],
                  nhead_enc=1, n_encoder_layers=6, dim_ff=2048, dropout=0.1, pos_enc=True, 
-                 linear_layers=[128], activation='relu', norm=True, yrange=(0, 2.05), **kwargs):
+                 linear_layers=[128], activation='relu', norm=True, yrange=(0, 2.05), time_included=False, **kwargs):
         store_attr('dim,n_class')
         self.norm = Normalization(1) if norm else noop
-        self.convs = XResBlocks(block, conv_blocks, c_in=dim, block_szs=block_szs, stride=1, **kwargs)
+        self.convs = XResBlocks(block, conv_blocks, c_in=dim if not time_included else dim+1, block_szs=block_szs, stride=1, **kwargs)
         self.encoder = tfm_encoder(block_szs[-1], nhead_enc, n_encoder_layers, dim_ff, dropout, activation)
         self.pos_enc = PositionalEncoding(block_szs[-1]) if pos_enc else noop
         linear_layers = [block_szs[-1]] + linear_layers + [n_class]
@@ -291,7 +291,7 @@ class XResAttn(Module):
         self.linear = Classifier(linear_layers, ps, trp=(2, 1))
         # act is called in forward, activation is called in validation functions.
         self.act, self.activation = _get_acts(n_class, yrange)
-        
+
     def forward(self, x, use_mask=False, src_mask=None, src_key_padding_mask=None):
         x = self.norm(x)
         x = self.convs(x.transpose(2, 1)).transpose(2, 1)

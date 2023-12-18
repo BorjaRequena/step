@@ -38,12 +38,17 @@ MODEL_DATA = {
 DEFAULT_TOKEN = -1
 
 # %% ../nbs/source/00_data.ipynb 6
-def combine_trajectories(datasets, dim, margin=10, random_lengths=False):
+def combine_trajectories(datasets, dim, margin=10, includes_time=False, random_lengths=False):
     """Combine the trajectories in `datasets` to create heterogeneous
     trajectories by assigning random changepoints in between."""
     n_change = len(datasets) - 1
     min_t = (n_change + 1)*margin 
-    n_trajs, max_t = datasets[0].shape[0], datasets[0][0, 2:].reshape(dim, -1).shape[-1]
+
+    if includes_time:
+        n_trajs, max_t = datasets[0].shape[0], datasets[0][0,2]
+    else:
+        n_trajs, max_t = datasets[0].shape[0], datasets[0][0, 2:].reshape(dim, -1).shape[-1]
+    max_t = int(max_t)
     if max_t < min_t: 
         raise ValueError("Trajectory length must be, at least, (change points + 1) times" +
                          f"the margin. Got length {max_t} for margin {margin}" +
@@ -52,13 +57,22 @@ def combine_trajectories(datasets, dim, margin=10, random_lengths=False):
                else np.ones(n_trajs, dtype=int)*max_t)
     change_points = _get_change_points(n_change, lengths, margin)
     datasets = _permute_datasets(datasets)
-    trajectories, labels = [], []
+    trajectories, labels, times = [], [], []
     for n in range(n_trajs):
-        trajs = [datasets[c][n, 2:] for c in range(n_change+1)]
+        if includes_time:
+            trajs = [datasets[c][n, 2+1+lengths[n]:] for c in range(n_change+1)]
+            times_ = [datasets[c][n, 3:3+lengths[n]] for c in range(n_change+1)]
+        else:
+            trajs = [datasets[c][n, 2:] for c in range(n_change+1)]
         trajectories.append(_merge_trajectories(trajs, change_points[n], dim, max_t=lengths[n]))
+        times.append(_merge_trajectories(times_, change_points[n], 1, max_t=lengths[n]))
         labels.append(np.concatenate([datasets[c][n, :2] for c in range(n_change+1)]))
-    return trajectories, labels, change_points
-                
+
+    if len(times) == 0:
+        return trajectories, labels, change_points
+    else:
+        return trajectories, times, labels, change_points
+
 def _add_permutation_sample(repeated, datasets, idx):
     "Checks conditions in order add an additional sample from which to perform permutations"
     check_length = len(repeated) <= 2
@@ -120,25 +134,44 @@ def _permute_datasets(datasets, max_iter=1000):
     return [ds[i] for ds,i in zip(datasets, idx)]
 
 # %% ../nbs/source/00_data.ipynb 8
-def trajs2df(trajectories, labels, change_points, dim, noise=None):
+def trajs2df(trajectories, labels, change_points, dim, times=None, noise=None):
     "Stores all the trajectory information in a `pandas.DataFrame`."
     data = []
-    for traj, l, cp in zip(trajectories, labels, change_points):
-        x, cp = tensor(traj), tensor(cp)
-        length, n_cp = x.shape[1], len(cp)
-        models, exps = tensor(l[::2]).to(int), tensor(l[1::2])
-        y_mod, y_exp = torch.zeros(1, length, dtype=int), torch.zeros(1, length)
-        lims = [0] + cp.tolist() + [None]
-        for l0, l1, model, exp in zip(lims[:-1], lims[1:], models, exps): 
-            s = slice(l0, l1)
-            y_mod[:, s], y_exp[:, s] = model, exp
-        y = torch.cat((y_mod, y_exp), dim=0)
-        data.append({'dim': dim, 'len': length, 'n_cp': n_cp, 'cp': cp, 'models': models, 
-                     'exps': exps, 'x': x, 'y': y, 'y_mod': y_mod, 'y_exp': y_exp})
-    df = pd.DataFrame.from_records(data)
-    if noise is not None: 
-        df.loc[:, 'noise'] = noise
-    return df
+    
+    if times is None:
+        for traj, l, cp in zip(trajectories, labels, change_points):
+            x, cp = tensor(traj), tensor(cp)
+            length, n_cp = x.shape[1], len(cp)
+            models, exps = tensor(l[::2]).to(int), tensor(l[1::2])
+            y_mod, y_exp = torch.zeros(1, length, dtype=int), torch.zeros(1, length)
+            lims = [0] + cp.tolist() + [None]
+            for l0, l1, model, exp in zip(lims[:-1], lims[1:], models, exps): 
+                s = slice(l0, l1)
+                y_mod[:, s], y_exp[:, s] = model, exp
+            y = torch.cat((y_mod, y_exp), dim=0)
+            data.append({'dim': dim, 'len': length, 'n_cp': n_cp, 'cp': cp, 'models': models, 
+                        'exps': exps, 'x': x, 'y': y, 'y_mod': y_mod, 'y_exp': y_exp})
+        df = pd.DataFrame.from_records(data)
+        if noise is not None: 
+            df.loc[:, 'noise'] = noise
+        return df
+    else:
+        for traj, t, l, cp in zip(trajectories, times, labels, change_points):
+            x, t, cp = tensor(traj), tensor(t), tensor(cp)
+            length, n_cp = x.shape[1], len(cp)
+            models, exps = tensor(l[::2]).to(int), tensor(l[1::2])
+            y_mod, y_exp = torch.zeros(1, length, dtype=int), torch.zeros(1, length)
+            lims = [0] + cp.tolist() + [None]
+            for l0, l1, model, exp in zip(lims[:-1], lims[1:], models, exps): 
+                s = slice(l0, l1)
+                y_mod[:, s], y_exp[:, s] = model, exp
+            y = torch.cat((y_mod, y_exp), dim=0)
+            data.append({'dim': dim, 'len': length, 'n_cp': n_cp, 'cp': cp, 'models': models, 
+                        'exps': exps, 'x': x, 'y': y, 't':t, 'y_mod': y_mod, 'y_exp': y_exp})
+        df = pd.DataFrame.from_records(data)
+        if noise is not None: 
+            df.loc[:, 'noise'] = noise
+        return df
 
 # %% ../nbs/source/00_data.ipynb 10
 def create_andi_trajectories(n_traj, max_t, dim, exponents, models, noise=[0.1, 0.5, 1.]):
@@ -234,11 +267,22 @@ def brownian_motion(n_traj, max_t, D, dim=1, dt=None):
     """
     This 'if' is the new thing here
     """
+    return_intervals = False
     if dt is None:
-        dt = np.random.uniform(100e-6, 10e-3, size=D.shape)
+        return_intervals = True
+        #dt = np.random.uniform(100e-6, 10e-3, size=D.shape)
+        dt = np.ones((n_traj, 1, max_t))
+        for i_traje in range(n_traj):
+            intervals_mean = np.random.uniform(100e-6, 10e-3)
+            dt[i_traje,0,:] = np.random.exponential(intervals_mean, size=max_t)
 
     bm = (np.sqrt(2*D*dt)*np.random.randn(n_traj, dim, max_t)).cumsum(-1)
-    return bm - bm[:, :, 0, None]
+    dt = dt.cumsum(-1)
+
+    if return_intervals:
+        return bm - bm[:, :, 0, None], dt - dt[:, :, 0, None]
+    else:
+        return bm - bm[:, :, 0, None]
 
 # %% ../nbs/source/00_data.ipynb 31
 @delegates(brownian_motion)
@@ -247,9 +291,10 @@ def create_bm_trajectories(n_traj, max_t, Ds=[1.], shuffle=True, **kwargs):
     if not isinstance(Ds, Iterable): Ds = [Ds]
     n_per_d = n_traj//len(Ds)
     Ds = np.repeat(np.array(Ds), n_per_d)
-    bms = brownian_motion(len(Ds), max_t, Ds[:, None, None], **kwargs)
+    bms, dt = brownian_motion(len(Ds), max_t, Ds[:, None, None], **kwargs)
     info = np.tile(Ds, (2, 1)).T
-    trajs = np.concatenate((info, bms.reshape(info.shape[0], -1)), -1)
+    max_t = np.tile(max_t, (n_traj, 1))
+    trajs = np.concatenate((info, max_t, np.squeeze(dt), bms.reshape(info.shape[0], -1)), -1)
     return np.random.permutation(trajs) if shuffle else trajs
 
 # %% ../nbs/source/00_data.ipynb 35
@@ -269,8 +314,8 @@ def create_bm_segmentation_dataset(
     n_ds = n_change_points + 1
     Ds = np.logspace(-3, 3, n_traj//100) if Ds is None else Ds
     datasets = [create_bm_trajectories(n_traj, max_t, Ds=Ds, dim=dim) for _ in range(n_ds)]
-    trajectories, labels, change_points = combine_trajectories(datasets, dim, **kwargs)
-    seg_dataset = trajs2df(trajectories, labels, change_points, dim)
+    trajectories, times, labels, change_points = combine_trajectories(datasets, dim, includes_time=True, **kwargs)
+    seg_dataset = trajs2df(trajectories, labels, change_points, dim, times=times)
     path = DATA_PATH/get_bmds_fname(n_change_points, max_t, dim, name) if path is None else path
     if save: seg_dataset.to_pickle(path)
     return seg_dataset
@@ -363,6 +408,8 @@ def get_segmentation_dls(
     if models is not None or exps is not None: ds = _filter_dataset(ds, models, exps, n_change)
     if size is not None and size <= ds.shape[0]: ds = _subsample_dataset(ds, size)
     x = ds['x'].map(partial(torch.transpose, dim0=1, dim1=0))
+    t = ds['t'].map(partial(torch.transpose, dim0=1, dim1=0))
+    x = [torch.cat((x_i, t_i), dim=1) for x_i, t_i in zip(x,t)]
     y = ds[target].map(torch.squeeze)
     if tfm_y is not None: y = y.map(tfm_y)
     ds = L(zip(x, y))
