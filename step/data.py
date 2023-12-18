@@ -228,8 +228,15 @@ def get_andids_fname(n_change_points, max_t, dim, name=""):
     return fname + ".pkl"
 
 # %% ../nbs/source/00_data.ipynb 30
-def brownian_motion(n_traj, max_t, D, dim=1, dt=1):
+def brownian_motion(n_traj, max_t, D, dim=1, dt=None):
     "Simulate Brownian motion trajectories."
+
+    """
+    This 'if' is the new thing here
+    """
+    if dt is None:
+        dt = np.random.uniform(100e-6, 10e-3, size=D.shape)
+
     bm = (np.sqrt(2*D*dt)*np.random.randn(n_traj, dim, max_t)).cumsum(-1)
     return bm - bm[:, :, 0, None]
 
