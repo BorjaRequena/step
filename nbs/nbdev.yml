@@ -1,9 +1,0 @@
-project:
-  output-dir: _docs
-
-website:
-  title: "step"
-  site-url: "https://BorjaRequena.github.io/step"
-  description: "Diffusion properties at every time step"
-  repo-branch: main
-  repo-url: "https://github.com/BorjaRequena/step"
