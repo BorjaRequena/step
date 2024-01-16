@@ -2,9 +2,9 @@
 
 # %% auto 0
 __all__ = ['get_act', 'Normalization', 'Transpose', 'ConcatPooling', 'tfm_encoder', 'Classifier', 'LinBnDropTrp', 'Transformer',
-           'PositionalEncoding', 'EncoderClassifier', 'ConvAttn', 'XResBlocks', 'XResAttn', 'GeneralPixleShuffle',
-           'icnr_init_general', 'PixelShuffleUpsampling', 'UnetBlock', 'get_sz_change_idxs', 'model_sizes',
-           'in_channels', 'dummy_eval', 'ResizeToOrig', 'AttnDynamicUnet', 'UnetModel']
+           'PositionalEncoding', 'EncoderClassifier', 'ConvAttn', 'XResBlocks', 'XResAttn', 'LogXResAttn',
+           'GeneralPixleShuffle', 'icnr_init_general', 'PixelShuffleUpsampling', 'UnetBlock', 'get_sz_change_idxs',
+           'model_sizes', 'in_channels', 'dummy_eval', 'ResizeToOrig', 'AttnDynamicUnet', 'UnetModel']
 
 # %% ../nbs/source/01_models.ipynb 2
 import fastai
@@ -306,7 +306,21 @@ class XResAttn(Module):
             if p.dim() > 1:
                 nn.init.xavier_uniform_(p)
 
-# %% ../nbs/source/01_models.ipynb 44
+# %% ../nbs/source/01_models.ipynb 43
+class LogXResAttn(XResAttn):
+    "Xresnet blocks with attention at the end. t takes the logarithm of the displacements."
+
+    def forward(self, x, use_mask=False, src_mask=None, src_key_padding_mask=None):
+        x = torch.clamp(x[:, 1:] - x[:, :-1], min=1e-8)
+        x = x.sign()*x.abs().log()
+        x = self.norm(x)
+        x = self.convs(x.transpose(2, 1)).transpose(2, 1)
+        src = self.pos_enc(x.transpose(1, 0))
+        if use_mask and src_mask is None: src_mask = self.get_random_mask(src.shape[0])
+        out_enc = self.encoder(src, mask=src_mask, src_key_padding_mask=src_key_padding_mask)
+        return self.act(self.linear(out_enc.transpose(1, 0)))
+
+# %% ../nbs/source/01_models.ipynb 46
 class GeneralPixleShuffle(Module):
     "Generalized Pixle Shuffle to work with any data dimensionality."
     def __init__(self, upscale_factor): self.scale = upscale_factor
@@ -331,7 +345,7 @@ def icnr_init_general(x, scale=2, init=nn.init.kaiming_normal_):
     k = k.repeat(1, 1, scale**len(shape))
     return k.contiguous().view([nf, ni, *shape]).transpose(0, 1)
 
-# %% ../nbs/source/01_models.ipynb 45
+# %% ../nbs/source/01_models.ipynb 47
 class PixelShuffleUpsampling(nn.Sequential):
     "Updample by `scale` from `ni` filters to `nf` using `GeneralPixleShuffle`."
     def __init__(self, ni, nf=None, scale=2, ndim=2, blur=False,
@@ -348,7 +362,7 @@ class PixelShuffleUpsampling(nn.Sequential):
             layers += [pad((1, 0)*ndim), avg_pool(2, stride=1)]
         super().__init__(*layers)
 
-# %% ../nbs/source/01_models.ipynb 46
+# %% ../nbs/source/01_models.ipynb 48
 class UnetBlock(Module):
     "A quasi-UNet block using pixel shuffle upsampling."
     @delegates(ConvLayer.__init__)
@@ -379,7 +393,7 @@ class UnetBlock(Module):
         cat_x = self.relu(torch.cat([up_out, self.bn(s)], dim=1))
         return self.conv2(self.conv1(cat_x))
 
-# %% ../nbs/source/01_models.ipynb 48
+# %% ../nbs/source/01_models.ipynb 50
 def get_sz_change_idxs(sizes):
     "Get the indexes of the layers where the size of the activation changes."
     feature_szs = [size[-1] for size in sizes]
@@ -405,7 +419,7 @@ def dummy_eval(m, size=(64,64)):
     x = one_param(m).new(1, ch_in, *size).requires_grad_(False).uniform_(-1.,1.)
     with torch.no_grad(): return m.eval()(x)
 
-# %% ../nbs/source/01_models.ipynb 49
+# %% ../nbs/source/01_models.ipynb 51
 class ResizeToOrig(Module):
     "Merge a shortcut with the module result by adding or concatenating them if `dense=True`."
     def __init__(self, mode='nearest'): self.mode = mode
@@ -415,7 +429,7 @@ class ResizeToOrig(Module):
             x = F.interpolate(x, x.orig.shape[-dim:], mode=self.mode)
         return x
 
-# %% ../nbs/source/01_models.ipynb 50
+# %% ../nbs/source/01_models.ipynb 52
 class AttnDynamicUnet(SequentialEx):
     "Create a U-Net from a given architecture."
     def __init__(self, encoder, n_out, img_size, ndim=1, num_encoder_layers=6, nhead_enc=8, 
@@ -472,7 +486,7 @@ class AttnDynamicUnet(SequentialEx):
     def __del__(self):
         if hasattr(self, "sfs"): self.sfs.remove()
 
-# %% ../nbs/source/01_models.ipynb 52
+# %% ../nbs/source/01_models.ipynb 54
 class UnetModel(SequentialEx):
     "U-net with a final dense layer."
     @delegates(AttnDynamicUnet.__init__)
