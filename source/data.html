@@ -1,0 +1,1574 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.450">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="description" content="Data generation and data loading methods for anomalous diffusion segmentation.">
+
+<title>STEP - Data</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<link rel="stylesheet" href="../styles.css">
+<meta property="og:title" content="STEP - Data">
+<meta property="og:description" content="Data generation and data loading methods for anomalous diffusion segmentation.">
+<meta property="og:image" content="https://BorjaRequena.github.io/step/source/00_data_files/figure-html/cell-16-output-1.png">
+<meta property="og:site-name" content="STEP">
+<meta property="og:image:height" content="372">
+<meta property="og:image:width" content="592">
+<meta name="twitter:title" content="STEP - Data">
+<meta name="twitter:description" content="Data generation and data loading methods for anomalous diffusion segmentation.">
+<meta name="twitter:image" content="https://BorjaRequena.github.io/step/source/00_data_files/figure-html/cell-16-output-1.png">
+<meta name="twitter:image-height" content="372">
+<meta name="twitter:image-width" content="592">
+<meta name="twitter:card" content="summary_large_image">
+</head>
+
+<body class="nav-sidebar floating nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a href="../index.html" class="navbar-brand navbar-brand-logo">
+    <img src="../logo.png" alt="" class="navbar-logo">
+    </a>
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">STEP</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/BorjaRequena/step" rel="" target=""><i class="bi bi-github" role="img">
+</i> 
+ <span class="menu-text"></span></a>
+  </li>  
+</ul>
+            <div class="quarto-navbar-tools">
+</div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../source/data.html">Documentation</a></li><li class="breadcrumb-item"><a href="../source/data.html">Data</a></li></ol></nav>
+      <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+      </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal sidebar-navigation floating overflow-auto">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Getting started</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">
+ <span class="menu-text">Documentation</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../source/data.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Data</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../source/models.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Models</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../source/baselines.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Baselines</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../source/utils.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Utils</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../tutorials/index_tutorials.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Tutorials</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tutorials/model_training.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Model training</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tutorials/analysis_bm.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Benchmark: Brownian motion</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tutorials/analysis_andi.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Benchmark: anomalous diffusion</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tutorials/anomalous_from_normal.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Anomalous diffusion from normal diffusion</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#data-info" id="toc-data-info" class="nav-link active" data-scroll-target="#data-info">Data info</a></li>
+  <li><a href="#data-generation" id="toc-data-generation" class="nav-link" data-scroll-target="#data-generation">Data generation</a>
+  <ul class="collapse">
+  <li><a href="#combine_trajectories" id="toc-combine_trajectories" class="nav-link" data-scroll-target="#combine_trajectories">combine_trajectories</a></li>
+  <li><a href="#trajs2df" id="toc-trajs2df" class="nav-link" data-scroll-target="#trajs2df">trajs2df</a></li>
+  <li><a href="#anomalous-diffusion-segmentation-dataset" id="toc-anomalous-diffusion-segmentation-dataset" class="nav-link" data-scroll-target="#anomalous-diffusion-segmentation-dataset">Anomalous diffusion segmentation dataset</a>
+  <ul class="collapse">
+  <li><a href="#add_localization_noise" id="toc-add_localization_noise" class="nav-link" data-scroll-target="#add_localization_noise">add_localization_noise</a></li>
+  <li><a href="#create_andi_trajectories" id="toc-create_andi_trajectories" class="nav-link" data-scroll-target="#create_andi_trajectories">create_andi_trajectories</a></li>
+  <li><a href="#get_andids_fname" id="toc-get_andids_fname" class="nav-link" data-scroll-target="#get_andids_fname">get_andids_fname</a></li>
+  <li><a href="#create_andi_segmentation_dataset" id="toc-create_andi_segmentation_dataset" class="nav-link" data-scroll-target="#create_andi_segmentation_dataset">create_andi_segmentation_dataset</a></li>
+  </ul></li>
+  <li><a href="#brownian-motion" id="toc-brownian-motion" class="nav-link" data-scroll-target="#brownian-motion">Brownian motion</a>
+  <ul class="collapse">
+  <li><a href="#brownian_motion" id="toc-brownian_motion" class="nav-link" data-scroll-target="#brownian_motion">brownian_motion</a></li>
+  <li><a href="#create_bm_trajectories" id="toc-create_bm_trajectories" class="nav-link" data-scroll-target="#create_bm_trajectories">create_bm_trajectories</a></li>
+  <li><a href="#get_bmds_fname" id="toc-get_bmds_fname" class="nav-link" data-scroll-target="#get_bmds_fname">get_bmds_fname</a></li>
+  <li><a href="#create_bm_segmentation_dataset" id="toc-create_bm_segmentation_dataset" class="nav-link" data-scroll-target="#create_bm_segmentation_dataset">create_bm_segmentation_dataset</a></li>
+  <li><a href="#attm-trajectories" id="toc-attm-trajectories" class="nav-link" data-scroll-target="#attm-trajectories">ATTM trajectories</a></li>
+  <li><a href="#create_fixed_attm_trajs" id="toc-create_fixed_attm_trajs" class="nav-link" data-scroll-target="#create_fixed_attm_trajs">create_fixed_attm_trajs</a></li>
+  </ul></li>
+  <li><a href="#datasets-with-variable-number-of-change-points" id="toc-datasets-with-variable-number-of-change-points" class="nav-link" data-scroll-target="#datasets-with-variable-number-of-change-points">Datasets with variable number of change points</a>
+  <ul class="collapse">
+  <li><a href="#combine_datasets" id="toc-combine_datasets" class="nav-link" data-scroll-target="#combine_datasets">combine_datasets</a></li>
+  <li><a href="#example-brownian-motion" id="toc-example-brownian-motion" class="nav-link" data-scroll-target="#example-brownian-motion">Example: Brownian motion</a></li>
+  <li><a href="#example-anomalous-diffusion" id="toc-example-anomalous-diffusion" class="nav-link" data-scroll-target="#example-anomalous-diffusion">Example: anomalous diffusion</a></li>
+  </ul></li>
+  </ul></li>
+  <li><a href="#validation-with-andi" id="toc-validation-with-andi" class="nav-link" data-scroll-target="#validation-with-andi">Validation with AnDi</a>
+  <ul class="collapse">
+  <li><a href="#load_andi_data" id="toc-load_andi_data" class="nav-link" data-scroll-target="#load_andi_data">load_andi_data</a></li>
+  </ul></li>
+  <li><a href="#dataloaders" id="toc-dataloaders" class="nav-link" data-scroll-target="#dataloaders">DataLoaders</a>
+  <ul class="collapse">
+  <li><a href="#load_dataset" id="toc-load_dataset" class="nav-link" data-scroll-target="#load_dataset">load_dataset</a></li>
+  <li><a href="#get_segmentation_dls" id="toc-get_segmentation_dls" class="nav-link" data-scroll-target="#get_segmentation_dls">get_segmentation_dls</a></li>
+  <li><a href="#segmentationtransform" id="toc-segmentationtransform" class="nav-link" data-scroll-target="#segmentationtransform">SegmentationTransform</a></li>
+  <li><a href="#get_transformer_dls" id="toc-get_transformer_dls" class="nav-link" data-scroll-target="#get_transformer_dls">get_transformer_dls</a></li>
+  <li><a href="#get_andi_valid_dls" id="toc-get_andi_valid_dls" class="nav-link" data-scroll-target="#get_andi_valid_dls">get_andi_valid_dls</a></li>
+  </ul></li>
+  </ul>
+<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/BorjaRequena/step/issues/new" class="toc-action">Report an issue</a></p></div></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Data</h1>
+</div>
+
+<div>
+  <div class="description">
+    Data generation and data loading methods for anomalous diffusion segmentation.
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<!-- WARNING: THIS FILE WAS AUTOGENERATED! DO NOT EDIT! -->
+<section id="data-info" class="level1">
+<h1>Data info</h1>
+<p>We provide a set of variables with default information about the nature of the data and the default path to save it.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>ROOT <span class="op">=</span> Path(os.path.dirname(os.path.abspath(<span class="st">'../'</span>)))</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>DATA_PATH <span class="op">=</span> ROOT<span class="op">/</span><span class="st">"data/"</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>DATA_PATH.mkdir(exist_ok<span class="op">=</span><span class="va">True</span>, parents<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>FIG_PATH <span class="op">=</span> DATA_PATH<span class="op">/</span><span class="st">"figures"</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>FIG_PATH.mkdir(exist_ok<span class="op">=</span><span class="va">True</span>, parents<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>MODEL_PATH <span class="op">=</span> ROOT<span class="op">/</span><span class="st">"models"</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>MODEL_PATH.mkdir(exist_ok<span class="op">=</span><span class="va">True</span>, parents<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>MODEL_DATA <span class="op">=</span> {</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    <span class="dv">0</span>: {<span class="st">'name'</span>: <span class="st">'attm'</span>, <span class="st">'exps'</span>: (<span class="fl">0.05</span>, <span class="fl">1.</span>)},</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    <span class="dv">1</span>: {<span class="st">'name'</span>: <span class="st">'ctrw'</span>, <span class="st">'exps'</span>: (<span class="fl">0.05</span>, <span class="fl">1.</span>)},</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    <span class="dv">2</span>: {<span class="st">'name'</span>: <span class="st">'fbm'</span>,  <span class="st">'exps'</span>: (<span class="fl">0.05</span>, <span class="fl">1.95</span>)},</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>    <span class="dv">3</span>: {<span class="st">'name'</span>: <span class="st">'lw'</span>,   <span class="st">'exps'</span>: (<span class="fl">1.05</span>, <span class="fl">2.</span>)},</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>    <span class="dv">4</span>: {<span class="st">'name'</span>: <span class="st">'sbm'</span>,  <span class="st">'exps'</span>: (<span class="fl">0.05</span>, <span class="fl">2.</span>)}</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>              </span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>DEFAULT_TOKEN <span class="op">=</span> <span class="op">-</span><span class="dv">1</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>By default, we keep the root of the repository in <code>ROOT</code>, from which we define <code>DATA_PATH=ROOT/'data'</code> and <code>MODEL_PATH=ROOT/'models'</code>, subsequently, we define <code>FIG_PATH=DATA_PATH/'figures'</code>. We use these as default paths to save and load the data, the trained models and the output figures.</p>
+<p>Then, <code>MODEL_DATA</code> is a dictionary containing the information about the different anomalous diffusion models that we consider. And <code>DEFAULT_TOKEN=-1</code> is the default value for the beginning of sequence token.</p>
+</section>
+<section id="data-generation" class="level1">
+<h1>Data generation</h1>
+<p>To train our models, we make extensive use of simulated trajectories. The goal is to simulate realistic conditions in experiments to help our models generalize well in experimental applications.</p>
+<p>We follow two main approaches to simulate our data depending on whether we’re working with anomalous diffusion or Brownian motion (normal diffusion).</p>
+<p>However, the main framework is common for both. To generate trajectories with changes in diffusive behaviour, we simulate as many full trajectories as different segments we wish to have. Then, we take a sample segment of each and combine them together to obtain the resulting heterogeneous trajectory.</p>
+<hr>
+<p><a href="https://github.com/BorjaRequena/step/blob/main/step/data.py#L41" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<section id="combine_trajectories" class="level3">
+<h3 class="anchored" data-anchor-id="combine_trajectories">combine_trajectories</h3>
+<blockquote class="blockquote">
+<pre><code> combine_trajectories (datasets, dim, margin=10, random_lengths=False)</code></pre>
+</blockquote>
+<p>Combine the trajectories in <code>datasets</code> to create heterogeneous trajectories by assigning random changepoints in between.</p>
+<p>We use <a href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html">pandas dataframes</a> to store our data.</p>
+<hr>
+<p><a href="https://github.com/BorjaRequena/step/blob/main/step/data.py#L123" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="trajs2df" class="level3">
+<h3 class="anchored" data-anchor-id="trajs2df">trajs2df</h3>
+<blockquote class="blockquote">
+<pre><code> trajs2df (trajectories, labels, change_points, dim, noise=None)</code></pre>
+</blockquote>
+<p>Stores all the trajectory information in a <code>pandas.DataFrame</code>.</p>
+<p>Every row contains the information corresponding to a trajectory:</p>
+<ul>
+<li><code>dim</code>: dimension of the trajecotry (1D, 2D, 3D, …) (<code>int</code>).</li>
+<li><code>len</code>: trajectory length (<code>int</code>).</li>
+<li><code>n_cp</code>: number of changepoints (<code>int</code>).</li>
+<li><code>cp</code>: changepoint positions (<code>torch.tensor</code>).</li>
+<li><code>models</code>: anomalous diffusion model of each segment (<code>torch.tensor</code>).</li>
+<li><code>exps</code>: anomalous diffusion exponent of each segment (<code>torch.tensor</code>).</li>
+<li><code>x</code>: trajectory (<code>torch.tensor</code>).</li>
+<li><code>y</code>: models and exps for every time step (<code>torch.tensor</code>).</li>
+<li><code>y_mod</code>: anomalous diffusion model for every time step (<code>torch.tensor</code>).</li>
+<li><code>y_exp</code>: anomalous diffusion exponent for every time step (<code>torch.tensor</code>).</li>
+</ul>
+</section>
+<section id="anomalous-diffusion-segmentation-dataset" class="level2">
+<h2 class="anchored" data-anchor-id="anomalous-diffusion-segmentation-dataset">Anomalous diffusion segmentation dataset</h2>
+<p>We simulate anomalous diffusion trajectories following a similar recipe to the proposed in <a href="https://github.com/AnDiChallenge/andi_datasets">andi_datasets</a> for the <a href="http://andi-challenge.org/">AnDi challenge</a>.</p>
+<p>As we specify in <code>MODEL_DATA</code>, there are five anomalous diffusion models that we consider, each with a different range of anomalous diffusion exponent <span class="math inline">\(\alpha\)</span>:</p>
+<ul>
+<li>Annealed transit time (ATTM) with <span class="math inline">\(\alpha\in\left[0.05, 1\right]\)</span>.</li>
+<li>Continuous time random walk (CTRW) with <span class="math inline">\(\alpha\in\left[0.05, 1\right]\)</span>.</li>
+<li>Fractional Brownian motion (FBM) with <span class="math inline">\(\alpha\in\left[0.05, 1.95\right]\)</span>.</li>
+<li>Lévy Walk (LW) with <span class="math inline">\(\alpha\in\left[1.05, 2\right]\)</span>.</li>
+<li>Scaled Brownian motion (SBM) with <span class="math inline">\(\alpha\in\left[0.05, 2\right]\)</span>.</li>
+</ul>
+<p>We take <span class="math inline">\(\alpha\)</span> values in intervals of 0.05 within the specified ranges.</p>
+<p>Furthermore, we add localization noise in the form of white noise <span class="math inline">\(\sim\mathcal{N}(0, \sigma_{\text{noise}})\)</span>. We also show how to build a data augmentation scheme with localization noise, for which having noiseless trajectories is useful. Simply, specify <code>noise=[0]</code> for that.</p>
+<hr>
+<p><a href="https://github.com/BorjaRequena/step/blob/main/step/data.py#L175" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<section id="add_localization_noise" class="level3">
+<h3 class="anchored" data-anchor-id="add_localization_noise">add_localization_noise</h3>
+<blockquote class="blockquote">
+<pre><code> add_localization_noise (trajs, noise_amplitude=[0.01, 0.5, 1])</code></pre>
+</blockquote>
+<p>Adds white noise with standard deviation <code>noise_amplitude</code>.</p>
+<hr>
+<p><a href="https://github.com/BorjaRequena/step/blob/main/step/data.py#L144" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="create_andi_trajectories" class="level3">
+<h3 class="anchored" data-anchor-id="create_andi_trajectories">create_andi_trajectories</h3>
+<blockquote class="blockquote">
+<pre><code> create_andi_trajectories (n_traj, max_t, dim, exponents, models,
+                           noise=[0.1, 0.5, 1.0])</code></pre>
+</blockquote>
+<p>Creates anomalous diffusion trajectories.</p>
+<p>For instance, we can generate a bunch of 2D FBM and SBM trajectories of 20 time steps and two levels of noise <span class="math inline">\(\sigma_{\text{noise}}=\left\{0.1, 0.5\right\}\)</span>. Furthermore, we can specify the desired values for <span class="math inline">\(\alpha\)</span>. Since both models can have a wide range of values, let’s make them purely super-diffusive <span class="math inline">\(\alpha&gt;1\)</span>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>n_traj <span class="op">=</span> <span class="dv">60</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>max_t <span class="op">=</span> <span class="dv">20</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>dim <span class="op">=</span> <span class="dv">2</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>exponents <span class="op">=</span> np.arange(<span class="fl">1.2</span>, <span class="fl">2.</span>, <span class="fl">0.05</span>)</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>models <span class="op">=</span> [<span class="dv">2</span>, <span class="dv">4</span>] <span class="co"># FBM and SBM</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>noise <span class="op">=</span> [<span class="fl">0.1</span>, <span class="fl">0.5</span>]</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>trajectories <span class="op">=</span> create_andi_trajectories(n_traj, max_t, dim, exponents, models, noise<span class="op">=</span>noise)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The function <a href="https://BorjaRequena.github.io/step/source/data.html#create_andi_trajectories"><code>create_andi_trajectories</code></a> tries to balance the classes for diffusion model and <span class="math inline">\(\alpha\)</span>. Usually, this results into little deviations from the specified number of trajectories. Sorry for the inconvenience!</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"We asked for </span><span class="sc">{</span>n_traj<span class="sc">}</span><span class="ss"> trajectories and got </span><span class="sc">{</span>trajectories<span class="sc">.</span>shape[<span class="dv">0</span>]<span class="sc">}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>We asked for 60 trajectories and got 62</code></pre>
+</div>
+</div>
+<p>As this uses <code>andi_datasets.datasets_theory</code> to generate the trajectories, the result is an <span class="math inline">\(N\times(2+d*T)\)</span> matrix, where <span class="math inline">\(N\)</span> is the number of trajectories, <span class="math inline">\(d\)</span> is the dimension, and <span class="math inline">\(T\)</span> is the trajectory length. The first two columns contain the trajectory information: model and <span class="math inline">\(\alpha\)</span>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>trajectories.shape</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>(62, 42)</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>trajectories[:<span class="dv">6</span>, :<span class="dv">2</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>array([[2.  , 1.2 ],
+       [2.  , 1.2 ],
+       [2.  , 1.25],
+       [2.  , 1.25],
+       [2.  , 1.3 ],
+       [2.  , 1.3 ]])</code></pre>
+</div>
+</div>
+<p>However, this method is limited to exclusively generate trajectories without changes along the way. As we mention above, we use it as a building block to generate our heterogeneous trajectories.</p>
+<hr>
+<p><a href="https://github.com/BorjaRequena/step/blob/main/step/data.py#L224" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="get_andids_fname" class="level3">
+<h3 class="anchored" data-anchor-id="get_andids_fname">get_andids_fname</h3>
+<blockquote class="blockquote">
+<pre><code> get_andids_fname (n_change_points, max_t, dim, name='')</code></pre>
+</blockquote>
+<p>Returns standardized file name for segmentation dataset.</p>
+<hr>
+<p><a href="https://github.com/BorjaRequena/step/blob/main/step/data.py#L199" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="create_andi_segmentation_dataset" class="level3">
+<h3 class="anchored" data-anchor-id="create_andi_segmentation_dataset">create_andi_segmentation_dataset</h3>
+<blockquote class="blockquote">
+<pre><code> create_andi_segmentation_dataset (n_traj:int, max_t:int=200, dim:int=1,
+                                   n_change_points:int=1, models:list=[0,
+                                   1, 2, 3, 4],
+                                   exponents:numpy.ndarray|None=None,
+                                   noise:list=[0.1, 0.5, 1.0],
+                                   path:pathlib.Path|str|None=None,
+                                   save:bool=True, name:str='', margin=10,
+                                   random_lengths=False)</code></pre>
+</blockquote>
+<p>Creates a dataset for trajectory segmentation of anomalous diffusion.</p>
+<table class="table">
+<colgroup>
+<col style="width: 6%">
+<col style="width: 25%">
+<col style="width: 34%">
+<col style="width: 34%">
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th><strong>Type</strong></th>
+<th><strong>Default</strong></th>
+<th><strong>Details</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>n_traj</td>
+<td>int</td>
+<td></td>
+<td>Number of trajectories</td>
+</tr>
+<tr class="even">
+<td>max_t</td>
+<td>int</td>
+<td>200</td>
+<td>Maximum trajectory length</td>
+</tr>
+<tr class="odd">
+<td>dim</td>
+<td>int</td>
+<td>1</td>
+<td>Trajectory dimension</td>
+</tr>
+<tr class="even">
+<td>n_change_points</td>
+<td>int</td>
+<td>1</td>
+<td>Number of changepoints in the trajectories</td>
+</tr>
+<tr class="odd">
+<td>models</td>
+<td>list</td>
+<td>[0, 1, 2, 3, 4]</td>
+<td>Diffusion models to consider</td>
+</tr>
+<tr class="even">
+<td>exponents</td>
+<td>numpy.ndarray | None</td>
+<td>None</td>
+<td>Anomalous exponents to consider. Defaults to full range</td>
+</tr>
+<tr class="odd">
+<td>noise</td>
+<td>list</td>
+<td>[0.1, 0.5, 1.0]</td>
+<td>Noise standard deviation</td>
+</tr>
+<tr class="even">
+<td>path</td>
+<td>pathlib.Path | str | None</td>
+<td>None</td>
+<td>Path to save the data</td>
+</tr>
+<tr class="odd">
+<td>save</td>
+<td>bool</td>
+<td>True</td>
+<td>Save or not the data</td>
+</tr>
+<tr class="even">
+<td>name</td>
+<td>str</td>
+<td></td>
+<td>Optional name for the data set</td>
+</tr>
+<tr class="odd">
+<td>margin</td>
+<td>int</td>
+<td>10</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>random_lengths</td>
+<td>bool</td>
+<td>False</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td><strong>Returns</strong></td>
+<td><strong>DataFrame</strong></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>Let’s create a segmentation dataset of a few trajectories.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>n_traj <span class="op">=</span> <span class="dv">100</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> create_andi_segmentation_dataset(n_traj, save<span class="op">=</span><span class="va">False</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The resulting <code>DataFrame</code> contains trajectories with one change point (by default), and combines all possible diffusion models and anomalous diffusion exponents.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>df.columns</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>Index(['dim', 'len', 'n_cp', 'cp', 'models', 'exps', 'x', 'y', 'y_mod',
+       'y_exp', 'noise'],
+      dtype='object')</code></pre>
+</div>
+</div>
+<p>Let’s look at an example.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>x0 <span class="op">=</span> df.loc[<span class="dv">0</span>]</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>x0.exps, x0.models, x0.cp</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>(tensor([0.2500, 0.2500]), tensor([1, 2]), tensor([113]))</code></pre>
+</div>
+</div>
+<p>This trajectory changes from CTRW with <span class="math inline">\(\alpha=0.25\)</span> to FBM with <span class="math inline">\(\alpha=0.25\)</span> at frame 113.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">7</span>,<span class="dv">4</span>))</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>plt.plot(x0.x[<span class="dv">0</span>])</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>plt.vlines(x0.cp.item(), <span class="bu">min</span>(x0.x[<span class="dv">0</span>]), <span class="bu">max</span>(x0.x[<span class="dv">0</span>]), linestyles<span class="op">=</span><span class="st">'dashed'</span>, colors<span class="op">=</span><span class="st">'k'</span>)</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>plt.grid()</span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"Trajectory with one change point"</span>)</span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">"Time step"</span>)</span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">"Position"</span>)<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<p><img src="00_data_files/figure-html/cell-16-output-1.png" class="img-fluid"></p>
+</div>
+</div>
+</section>
+</section>
+<section id="brownian-motion" class="level2">
+<h2 class="anchored" data-anchor-id="brownian-motion">Brownian motion</h2>
+<p>We simulate Brownian motion taking the displacements as white noise with standard deviation <span class="math inline">\(\sqrt{2D\delta t}\)</span>, where <span class="math inline">\(D\)</span> is the diffusion coefficient and <span class="math inline">\(\delta t\)</span> is the time-step duration (we generally take <span class="math inline">\(\delta t=1\)</span>).</p>
+<hr>
+<p><a href="https://github.com/BorjaRequena/step/blob/main/step/data.py#L231" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<section id="brownian_motion" class="level3">
+<h3 class="anchored" data-anchor-id="brownian_motion">brownian_motion</h3>
+<blockquote class="blockquote">
+<pre><code> brownian_motion (n_traj, max_t, D, dim=1, dt=1)</code></pre>
+</blockquote>
+<p>Simulate Brownian motion trajectories.</p>
+<hr>
+<p><a href="https://github.com/BorjaRequena/step/blob/main/step/data.py#L238" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="create_bm_trajectories" class="level3">
+<h3 class="anchored" data-anchor-id="create_bm_trajectories">create_bm_trajectories</h3>
+<blockquote class="blockquote">
+<pre><code> create_bm_trajectories (n_traj, max_t, Ds=[1.0], shuffle=True, dim=1,
+                         dt=1)</code></pre>
+</blockquote>
+<p>Simulate Brownian motion trajectories with various diffusion coefficients.</p>
+<p>Similar to <a href="https://BorjaRequena.github.io/step/source/data.html#create_andi_trajectories"><code>create_andi_trajectories</code></a>, <a href="https://BorjaRequena.github.io/step/source/data.html#create_bm_trajectories"><code>create_bm_trajectories</code></a> evenly distributes the amount of trajectories for each diffusion coefficient we consider.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>n_traj <span class="op">=</span> <span class="dv">9</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>max_t <span class="op">=</span> <span class="dv">5</span></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>trajectories <span class="op">=</span> create_bm_trajectories(n_traj, max_t, dim<span class="op">=</span><span class="dv">1</span>, Ds<span class="op">=</span>[<span class="fl">1.</span>, <span class="fl">2.</span>], shuffle<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>trajectories.shape</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>(8, 7)</code></pre>
+</div>
+</div>
+<p>Despite only having one parameter: the diffusion coefficient <span class="math inline">\(D\)</span>, we still find two additional terms in the trajectory length which are, simply, two copies of <span class="math inline">\(D\)</span>. This is to keep a consistent formatting with the anomalous diffusion trajectories that need to store the model and <span class="math inline">\(\alpha\)</span>.</p>
+<hr>
+<p><a href="https://github.com/BorjaRequena/step/blob/main/step/data.py#L271" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="get_bmds_fname" class="level3">
+<h3 class="anchored" data-anchor-id="get_bmds_fname">get_bmds_fname</h3>
+<blockquote class="blockquote">
+<pre><code> get_bmds_fname (n_change_points, max_t, dim, name='')</code></pre>
+</blockquote>
+<p>Returns consistent file name for segmentation dataset.</p>
+<hr>
+<p><a href="https://github.com/BorjaRequena/step/blob/main/step/data.py#L250" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="create_bm_segmentation_dataset" class="level3">
+<h3 class="anchored" data-anchor-id="create_bm_segmentation_dataset">create_bm_segmentation_dataset</h3>
+<blockquote class="blockquote">
+<pre><code> create_bm_segmentation_dataset (n_traj:int, max_t:int=200, dim:int=1,
+                                 n_change_points:int=1,
+                                 Ds:collections.abc.Iterable|None=None,
+                                 path:pathlib.Path|str|None=None,
+                                 save:bool=True, name:str='', margin=10,
+                                 random_lengths=False)</code></pre>
+</blockquote>
+<p>Creates a segmentation dataset to tell between diffusion coefficients.</p>
+<table class="table">
+<colgroup>
+<col style="width: 6%">
+<col style="width: 25%">
+<col style="width: 34%">
+<col style="width: 34%">
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th><strong>Type</strong></th>
+<th><strong>Default</strong></th>
+<th><strong>Details</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>n_traj</td>
+<td>int</td>
+<td></td>
+<td>Number of trajectories</td>
+</tr>
+<tr class="even">
+<td>max_t</td>
+<td>int</td>
+<td>200</td>
+<td>Maximum trajectory length</td>
+</tr>
+<tr class="odd">
+<td>dim</td>
+<td>int</td>
+<td>1</td>
+<td>Trajectory dimension</td>
+</tr>
+<tr class="even">
+<td>n_change_points</td>
+<td>int</td>
+<td>1</td>
+<td>Number of changepoints in the trajectories</td>
+</tr>
+<tr class="odd">
+<td>Ds</td>
+<td>collections.abc.Iterable | None</td>
+<td>None</td>
+<td>Diffusion coefficients to consider defaults to logspace(-3, 3)</td>
+</tr>
+<tr class="even">
+<td>path</td>
+<td>pathlib.Path | str | None</td>
+<td>None</td>
+<td>Path to save the data</td>
+</tr>
+<tr class="odd">
+<td>save</td>
+<td>bool</td>
+<td>True</td>
+<td>Save or not the data</td>
+</tr>
+<tr class="even">
+<td>name</td>
+<td>str</td>
+<td></td>
+<td>Optional name for the data set</td>
+</tr>
+<tr class="odd">
+<td>margin</td>
+<td>int</td>
+<td>10</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>random_lengths</td>
+<td>bool</td>
+<td>False</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td><strong>Returns</strong></td>
+<td><strong>DataFrame</strong></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>The behaviour is very similar to <a href="https://BorjaRequena.github.io/step/source/data.html#create_andi_segmentation_dataset"><code>create_andi_segmentation_dataset</code></a>. Let’s see an example.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>N <span class="op">=</span> <span class="dv">100</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> create_bm_segmentation_dataset(N, Ds<span class="op">=</span>[<span class="dv">10</span>, <span class="dv">50</span>, <span class="dv">100</span>], save<span class="op">=</span><span class="va">False</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>x0 <span class="op">=</span> df.iloc[<span class="dv">1</span>]</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>x0.exps, x0.cp</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>(tensor([100.,  10.]), tensor([54]))</code></pre>
+</div>
+</div>
+<p>The trajectory changes from <span class="math inline">\(D=100\)</span> to <span class="math inline">\(D=10\)</span> at the 54th time-step.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="dv">7</span>,<span class="dv">4</span>))</span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>plt.plot(x0.x[<span class="dv">0</span>])</span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>plt.vlines(x0.cp.item(), <span class="bu">min</span>(x0.x[<span class="dv">0</span>]), <span class="bu">max</span>(x0.x[<span class="dv">0</span>]), linestyles<span class="op">=</span><span class="st">'dashed'</span>, colors<span class="op">=</span><span class="st">'k'</span>)</span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>plt.grid()</span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>plt.title(<span class="st">"Trajectory with one change point"</span>)</span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">"Time step"</span>)</span>
+<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">"Position"</span>)<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<p><img src="00_data_files/figure-html/cell-24-output-1.png" class="img-fluid"></p>
+</div>
+</div>
+</section>
+<section id="attm-trajectories" class="level3">
+<h3 class="anchored" data-anchor-id="attm-trajectories">ATTM trajectories</h3>
+<p>Annealed transit time (ATTM) is an anomalous diffusion model consisting of piecewise normal diffusion. Every segment has a random diffusion coefficient <span class="math inline">\(D\)</span> drawn with probability <span class="math display">\[P(D) = \frac{D^{\sigma - 1}\exp(-D/b)}{b^\sigma\Gamma(\sigma)}\,,\]</span> with parameters <span class="math inline">\(\sigma\)</span> and <span class="math inline">\(b\)</span>. The residence time in each diffusive state, <span class="math inline">\(\tau\)</span>, depends on the magnitude of the diffusion coefficient: <span class="math display">\[P_\tau(\tau|D)=\frac{D^\gamma}{k}\exp(-\tau D^\gamma/k)\,,\]</span> with parameters <span class="math inline">\(\gamma\)</span> and <span class="math inline">\(k\)</span>. The parameters <span class="math inline">\(\sigma\)</span> and <span class="math inline">\(\gamma\)</span> in these distributions determine the anomalous exponent <span class="math inline">\(\alpha=\sigma/\gamma\)</span>, whenever <span class="math inline">\(\sigma&lt;\gamma&lt;\sigma+1\)</span>. Thus, for every <span class="math inline">\(\alpha\)</span> there are infinitely many valid combinations of <span class="math inline">\(\sigma, \,\gamma\)</span>.</p>
+<p>In <a href="https://github.com/AnDiChallenge/andi_datasets">andi_datasets</a>, these parameters are randomly sampled given a fixed <span class="math inline">\(\alpha\)</span>. Here, we wish to extract <span class="math inline">\(\sigma\)</span> and <span class="math inline">\(\gamma\)</span> and, thus, we need a consistent way to simulate ATTM trajectories with those parameters fixed.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>In <a href="https://arxiv.org/abs/2302.00410">our work</a>, we use ATTM trajectories to show how to characterize anomalous diffusion directly from changes in normal diffusion.</p>
+</div>
+</div>
+<hr>
+<p><a href="https://github.com/BorjaRequena/step/blob/main/step/data.py#L278" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="create_fixed_attm_trajs" class="level3">
+<h3 class="anchored" data-anchor-id="create_fixed_attm_trajs">create_fixed_attm_trajs</h3>
+<blockquote class="blockquote">
+<pre><code> create_fixed_attm_trajs (n_traj, max_t, sigma, gamma)</code></pre>
+</blockquote>
+<p>Creates 2-D ATTM trajectories with fixed sigma and gamma.</p>
+<p>Let’s generate some ATTM trajectories with fixed <span class="math inline">\(\sigma=0.3\)</span> and <span class="math inline">\(\gamma=0.4\)</span>, meaning that <span class="math inline">\(\alpha=0.75\)</span>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>n_traj <span class="op">=</span> <span class="dv">2</span></span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>max_t <span class="op">=</span> <span class="dv">15</span></span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>sigma, gamma <span class="op">=</span> <span class="fl">0.3</span>, <span class="fl">0.4</span></span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>trajs, ds <span class="op">=</span> create_fixed_attm_trajs(n_traj, max_t, sigma, gamma)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>fig, axes <span class="op">=</span> plt.subplots(nrows<span class="op">=</span><span class="dv">1</span>, ncols<span class="op">=</span><span class="dv">2</span>, figsize<span class="op">=</span>(<span class="dv">7</span>, <span class="dv">3</span>), constrained_layout<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">0</span>].plot(trajs[<span class="dv">0</span>].T)</span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">0</span>].set_xlabel(<span class="st">"Time"</span>, fontsize<span class="op">=</span><span class="dv">16</span>)</span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">0</span>].set_ylabel(<span class="st">"Position"</span>, fontsize<span class="op">=</span><span class="dv">16</span>)</span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">0</span>].tick_params(labelsize<span class="op">=</span><span class="dv">14</span>)</span>
+<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-7"><a href="#cb33-7" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">1</span>].semilogy(ds[<span class="dv">0</span>])</span>
+<span id="cb33-8"><a href="#cb33-8" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">1</span>].set_xlabel(<span class="st">"Time"</span>, fontsize<span class="op">=</span><span class="dv">16</span>)</span>
+<span id="cb33-9"><a href="#cb33-9" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">1</span>].set_ylabel(<span class="st">"D"</span>, fontsize<span class="op">=</span><span class="dv">16</span>)</span>
+<span id="cb33-10"><a href="#cb33-10" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">1</span>].tick_params(labelsize<span class="op">=</span><span class="dv">14</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<p><img src="00_data_files/figure-html/cell-27-output-1.png" class="img-fluid"></p>
+</div>
+</div>
+</section>
+</section>
+<section id="datasets-with-variable-number-of-change-points" class="level2">
+<h2 class="anchored" data-anchor-id="datasets-with-variable-number-of-change-points">Datasets with variable number of change points</h2>
+<p>So far we have shown how to build data sets with a fixed number of changepoints. In order to make a dataset that contains a variable number of change points, we can simply combine several of those in a smart way.</p>
+<p>This will make our models much more robust and allow us to generalize better to experimental data with an arbitrary number of changes along the trajectories.</p>
+<hr>
+<p><a href="https://github.com/BorjaRequena/step/blob/main/step/data.py#L299" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<section id="combine_datasets" class="level3">
+<h3 class="anchored" data-anchor-id="combine_datasets">combine_datasets</h3>
+<blockquote class="blockquote">
+<pre><code> combine_datasets (datasets, shuffle=True)</code></pre>
+</blockquote>
+<p>Combines data sets together.</p>
+</section>
+<section id="example-brownian-motion" class="level3">
+<h3 class="anchored" data-anchor-id="example-brownian-motion">Example: Brownian motion</h3>
+<p>With this code, we have generated the main test set of Brownian motion trajectories to validate our models.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>N_per_set <span class="op">=</span> <span class="dv">12000</span></span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>max_t <span class="op">=</span> <span class="dv">200</span></span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>dim <span class="op">=</span> <span class="dv">2</span></span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a>Ds <span class="op">=</span> np.logspace(<span class="op">-</span><span class="dv">3</span>, <span class="dv">3</span>, <span class="dv">1000</span>) </span>
+<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a>cps <span class="op">=</span> [<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">4</span>]</span>
+<span id="cb35-6"><a href="#cb35-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Choose a function to create datasets either brownian motion or anomalous diffusion</span></span>
+<span id="cb35-7"><a href="#cb35-7" aria-hidden="true" tabindex="-1"></a>ds_fun <span class="op">=</span> partial(create_bm_segmentation_dataset,</span>
+<span id="cb35-8"><a href="#cb35-8" aria-hidden="true" tabindex="-1"></a>                 max_t<span class="op">=</span>max_t, dim<span class="op">=</span>dim, Ds<span class="op">=</span>Ds, save<span class="op">=</span><span class="va">False</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>datasets <span class="op">=</span> [ds_fun(N_per_set, n_change_points<span class="op">=</span>n_cp) <span class="cf">for</span> n_cp <span class="kw">in</span> cps]</span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>dataset <span class="op">=</span> combine_datasets(datasets)</span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a>save_path <span class="op">=</span> DATA_PATH<span class="op">/</span>get_bmds_fname(<span class="ss">f'</span><span class="sc">{</span><span class="bu">min</span>(cps)<span class="sc">}</span><span class="ss">_to_</span><span class="sc">{</span><span class="bu">max</span>(cps)<span class="sc">}</span><span class="ss">'</span>, max_t, dim, <span class="st">'test'</span>)</span>
+<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a>dataset.to_pickle(save_path)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="example-anomalous-diffusion" class="level3">
+<h3 class="anchored" data-anchor-id="example-anomalous-diffusion">Example: anomalous diffusion</h3>
+<p>With this code, we have generated the main test set of anomalous diffusion trajectories to validate our models.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>N_per_set <span class="op">=</span> <span class="dv">12500</span></span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>max_t <span class="op">=</span> <span class="dv">200</span></span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>dim <span class="op">=</span> <span class="dv">2</span> </span>
+<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a>cps <span class="op">=</span> [<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">4</span>]</span>
+<span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Choose a function to create datasets either brownian motion or anomalous diffusion</span></span>
+<span id="cb37-6"><a href="#cb37-6" aria-hidden="true" tabindex="-1"></a>ds_fun <span class="op">=</span> partial(create_andi_segmentation_dataset,</span>
+<span id="cb37-7"><a href="#cb37-7" aria-hidden="true" tabindex="-1"></a>                 models<span class="op">=</span>models, max_t<span class="op">=</span>max_t, dim<span class="op">=</span>dim, noise<span class="op">=</span>[<span class="fl">0.</span>], save<span class="op">=</span><span class="va">False</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>datasets <span class="op">=</span> [ds_fun(N_per_set, n_change_points<span class="op">=</span>n_cp) <span class="cf">for</span> n_cp <span class="kw">in</span> cps]</span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>dataset <span class="op">=</span> combine_datasets(datasets)</span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a>save_path <span class="op">=</span> DATA_PATH<span class="op">/</span>get_andids_fname(<span class="ss">f'</span><span class="sc">{</span><span class="bu">min</span>(cps)<span class="sc">}</span><span class="ss">_to_</span><span class="sc">{</span><span class="bu">max</span>(cps)<span class="sc">}</span><span class="ss">'</span>, max_t, dim, <span class="st">'test'</span>)</span>
+<span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a>dataset.to_pickle(save_path)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+</section>
+</section>
+<section id="validation-with-andi" class="level1">
+<h1>Validation with AnDi</h1>
+<p>It is useful to validate our models over the <a href="http://andi-challenge.org/">AnDi challenge</a> data sets to compare them with the top performing models of the challenge.</p>
+<p>By default, we asume the data is in <code>DATA_PATH/andi_val_{task_number}</code>.</p>
+<hr>
+<p><a href="https://github.com/BorjaRequena/step/blob/main/step/data.py#L306" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<section id="load_andi_data" class="level3">
+<h3 class="anchored" data-anchor-id="load_andi_data">load_andi_data</h3>
+<blockquote class="blockquote">
+<pre><code> load_andi_data (dim=1, task=1, path=None)</code></pre>
+</blockquote>
+<p>Loads data from AnDi.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> load_andi_data(dim<span class="op">=</span><span class="dv">2</span>)</span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>df.shape</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>(10000, 4)</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>df.head(<span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">dim</th>
+<th data-quarto-table-cell-role="th">len</th>
+<th data-quarto-table-cell-role="th">x</th>
+<th data-quarto-table-cell-role="th">y</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">0</td>
+<td>2</td>
+<td>200</td>
+<td>[[tensor(0.), tensor(-0.5156), tensor(-0.8383), tensor(-1.4615), tensor(-1.7552), tensor(-1.6362), tensor(-1.4192), tensor(-1.3548), tensor(-1.2144), tensor(-1.7406), tensor(-1.6199), tensor(-1.4474), tensor(-0.2902), tensor(0.5447), tensor(0.5666), tensor(0.1618), tensor(-0.1004), tensor(-0.1377), tensor(-1.1998), tensor(-1.9200), tensor(-3.1992), tensor(-4.4678), tensor(-5.7045), tensor(-6.3007), tensor(-6.6895), tensor(-7.5415), tensor(-7.9907), tensor(-9.3120), tensor(-10.1935), tensor(-10.5246), tensor(-11.5122), tensor(-12.5124), tensor(-13.6076), tensor(-13.9701), tensor(-14.3846), ...</td>
+<td>[]</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">1</td>
+<td>2</td>
+<td>200</td>
+<td>[[tensor(0.), tensor(1.8434), tensor(2.5901), tensor(3.3360), tensor(3.3675), tensor(5.1754), tensor(6.7046), tensor(6.5266), tensor(5.5823), tensor(4.2652), tensor(2.6675), tensor(2.0960), tensor(1.3606), tensor(-0.0349), tensor(-1.4965), tensor(-0.4068), tensor(-1.8796), tensor(-1.7324), tensor(-1.8430), tensor(-0.4918), tensor(0.8988), tensor(1.1704), tensor(2.8995), tensor(3.4126), tensor(3.3071), tensor(4.3777), tensor(4.9901), tensor(6.3406), tensor(7.1728), tensor(8.1412), tensor(9.1267), tensor(9.0713), tensor(9.1243), tensor(11.2437), tensor(12.1926), tensor(12.3969), tensor(12.98...</td>
+<td>[]</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="dataloaders" class="level1">
+<h1>DataLoaders</h1>
+<p>Data loaders are essential to train our machine learning models. We provide functions that load the data and return appropiate <code>fastai.DataLoaders</code> for the segmentation tasks.</p>
+<hr>
+<p><a href="https://github.com/BorjaRequena/step/blob/main/step/data.py#L332" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<section id="load_dataset" class="level3">
+<h3 class="anchored" data-anchor-id="load_dataset">load_dataset</h3>
+<blockquote class="blockquote">
+<pre><code> load_dataset (n_change=1, max_t=200, dim=1, name='', path=None, bm=False)</code></pre>
+</blockquote>
+<p>Loads dataset according to <code>n_change</code>, <code>max_t</code> and <code>dim</code> or straight from <code>path</code>.</p>
+<hr>
+<p><a href="https://github.com/BorjaRequena/step/blob/main/step/data.py#L340" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="get_segmentation_dls" class="level3">
+<h3 class="anchored" data-anchor-id="get_segmentation_dls">get_segmentation_dls</h3>
+<blockquote class="blockquote">
+<pre><code> get_segmentation_dls (target:str='y_mod', models:list|None=None,
+                       exps:collections.abc.Iterable|None=None,
+                       size:int|None=None, bs:int=128,
+                       split_pct:float=0.2, shuffle:bool=True,
+                       tfm_y:collections.abc.Callable|None=None,
+                       n_change:int|str=1, bm:bool=False, max_t=200,
+                       dim=1, name='', path=None)</code></pre>
+</blockquote>
+<p>Obtain <code>DataLoaders</code> from dataset filtered by <code>models</code> and <code>exps</code> to predict <code>target</code>.</p>
+<table class="table">
+<colgroup>
+<col style="width: 6%">
+<col style="width: 25%">
+<col style="width: 34%">
+<col style="width: 34%">
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th><strong>Type</strong></th>
+<th><strong>Default</strong></th>
+<th><strong>Details</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>target</td>
+<td>str</td>
+<td>y_mod</td>
+<td>Task target <code>y_mod</code>, <code>y_exp</code> or <code>y</code> for both.</td>
+</tr>
+<tr class="even">
+<td>models</td>
+<td>list | None</td>
+<td>None</td>
+<td>List of models to consider. Defaults to all.</td>
+</tr>
+<tr class="odd">
+<td>exps</td>
+<td>collections.abc.Iterable | None</td>
+<td>None</td>
+<td>List of anomalous exponents to consider. Deafults to all.</td>
+</tr>
+<tr class="even">
+<td>size</td>
+<td>int | None</td>
+<td>None</td>
+<td>Maximum data set size. Defaults to full data set.</td>
+</tr>
+<tr class="odd">
+<td>bs</td>
+<td>int</td>
+<td>128</td>
+<td>Batch size.</td>
+</tr>
+<tr class="even">
+<td>split_pct</td>
+<td>float</td>
+<td>0.2</td>
+<td>Validation set split percentage from training data.</td>
+</tr>
+<tr class="odd">
+<td>shuffle</td>
+<td>bool</td>
+<td>True</td>
+<td>Shuffle the dataset.</td>
+</tr>
+<tr class="even">
+<td>tfm_y</td>
+<td>collections.abc.Callable | None</td>
+<td>None</td>
+<td>Transformation to apply to the target, e.g., <code>torch.log10</code>.</td>
+</tr>
+<tr class="odd">
+<td>n_change</td>
+<td>int | str</td>
+<td>1</td>
+<td>Number of changes in the trajectories, e.g., ‘1_to_4’.</td>
+</tr>
+<tr class="even">
+<td>bm</td>
+<td>bool</td>
+<td>False</td>
+<td>Is it Brownian motion (False for anomalous diffusion)</td>
+</tr>
+<tr class="odd">
+<td>max_t</td>
+<td>int</td>
+<td>200</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>dim</td>
+<td>int</td>
+<td>1</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>name</td>
+<td>str</td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td>path</td>
+<td>NoneType</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td><strong>Returns</strong></td>
+<td><strong>DataLoaders</strong></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>This is the main function to obtain <code>DataLoaders</code> for a segmentation task. These provide the trajetories with their corresponding labels at every time step.</p>
+<p>Let’s see an example for a classification task (setting <code>target='y_mod'</code>). We take a sub-sample of the dataset of <code>size=100</code> with a batch size <code>bs=4</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>seg_dls <span class="op">=</span> get_segmentation_dls(size<span class="op">=</span><span class="dv">100</span>, bs<span class="op">=</span><span class="dv">4</span>)</span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a>x, y <span class="op">=</span> seg_dls.one_batch()</span>
+<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a>x.shape, y.shape</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>(torch.Size([4, 200, 1]), torch.Size([4, 200]))</code></pre>
+</div>
+</div>
+<p>In this example, we have 1-dimensional trajectories with 200 time steps. Thus, the target is also 200 frames long.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a>x[<span class="dv">0</span>, :<span class="dv">5</span>], y[<span class="dv">0</span>, :<span class="dv">5</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>(tensor([[0.0000],
+         [3.3110],
+         [4.2102],
+         [7.4056],
+         [4.6176]]),
+ tensor([3, 3, 3, 3, 3]))</code></pre>
+</div>
+</div>
+<hr>
+<p><a href="https://github.com/BorjaRequena/step/blob/main/step/data.py#L399" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="segmentationtransform" class="level3">
+<h3 class="anchored" data-anchor-id="segmentationtransform">SegmentationTransform</h3>
+<blockquote class="blockquote">
+<pre><code> SegmentationTransform (target='y_mod', n_class=5, init_token=None)</code></pre>
+</blockquote>
+<p>Delegates (<code>__call__</code>,<code>decode</code>,<code>setup</code>) to (<code>encodes</code>,<code>decodes</code>,<code>setups</code>) if <code>split_idx</code> matches</p>
+<hr>
+<p><a href="https://github.com/BorjaRequena/step/blob/main/step/data.py#L387" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="get_transformer_dls" class="level3">
+<h3 class="anchored" data-anchor-id="get_transformer_dls">get_transformer_dls</h3>
+<blockquote class="blockquote">
+<pre><code> get_transformer_dls (target='y_mod', dim=1, n_change=1, max_t=200,
+                      valid_pct=0.2, models=None, exps=None, size=None,
+                      data_path=None, init_token=None, bs:int=64,
+                      shuffle_train:bool=None, shuffle:bool=True,
+                      val_shuffle:bool=False, n:int=None,
+                      path:str|Path='.', dl_type:TfmdDL=None,
+                      dl_kwargs:list=None, device:torch.device=None,
+                      drop_last:bool=None, val_bs:int=None)</code></pre>
+</blockquote>
+<p>Obtain <code>DataLoaders</code> from filtered dataset prepared for transformer training.</p>
+<table class="table">
+<colgroup>
+<col style="width: 6%">
+<col style="width: 25%">
+<col style="width: 34%">
+<col style="width: 34%">
+</colgroup>
+<thead>
+<tr class="header">
+<th></th>
+<th><strong>Type</strong></th>
+<th><strong>Default</strong></th>
+<th><strong>Details</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>target</td>
+<td>str</td>
+<td>y_mod</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>dim</td>
+<td>int</td>
+<td>1</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>n_change</td>
+<td>int</td>
+<td>1</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>max_t</td>
+<td>int</td>
+<td>200</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>valid_pct</td>
+<td>float</td>
+<td>0.2</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>models</td>
+<td>NoneType</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>exps</td>
+<td>NoneType</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>size</td>
+<td>NoneType</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>data_path</td>
+<td>NoneType</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>init_token</td>
+<td>NoneType</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>bs</td>
+<td>int</td>
+<td>64</td>
+<td>Batch size</td>
+</tr>
+<tr class="even">
+<td>shuffle_train</td>
+<td>bool</td>
+<td>None</td>
+<td>(Deprecated, use <code>shuffle</code>) Shuffle training <code>DataLoader</code></td>
+</tr>
+<tr class="odd">
+<td>shuffle</td>
+<td>bool</td>
+<td>True</td>
+<td>Shuffle training <code>DataLoader</code></td>
+</tr>
+<tr class="even">
+<td>val_shuffle</td>
+<td>bool</td>
+<td>False</td>
+<td>Shuffle validation <code>DataLoader</code></td>
+</tr>
+<tr class="odd">
+<td>n</td>
+<td>int</td>
+<td>None</td>
+<td>Size of <code>Datasets</code> used to create <code>DataLoader</code></td>
+</tr>
+<tr class="even">
+<td>path</td>
+<td>str | Path</td>
+<td>.</td>
+<td>Path to put in <code>DataLoaders</code></td>
+</tr>
+<tr class="odd">
+<td>dl_type</td>
+<td>TfmdDL</td>
+<td>None</td>
+<td>Type of <code>DataLoader</code></td>
+</tr>
+<tr class="even">
+<td>dl_kwargs</td>
+<td>list</td>
+<td>None</td>
+<td>List of kwargs to pass to individual <code>DataLoader</code>s</td>
+</tr>
+<tr class="odd">
+<td>device</td>
+<td>torch.device</td>
+<td>None</td>
+<td>Device to put <code>DataLoaders</code></td>
+</tr>
+<tr class="even">
+<td>drop_last</td>
+<td>bool</td>
+<td>None</td>
+<td>Drop last incomplete batch, defaults to <code>shuffle</code></td>
+</tr>
+<tr class="odd">
+<td>val_bs</td>
+<td>int</td>
+<td>None</td>
+<td>Validation batch size, defaults to <code>bs</code></td>
+</tr>
+</tbody>
+</table>
+<p>Transformer data loaders provide three items: raw trajectory (src), one-hot encoding of labels (tgt) and the labels to compute the loss. These are mainly intended for pointwise classification tasks, such as inferring the anomalous diffusion model behind the simulation. Otherwise, the one-hot-encoding does not make much sense.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a>tfm_dls <span class="op">=</span> get_transformer_dls(size<span class="op">=</span><span class="dv">100</span>, bs<span class="op">=</span><span class="dv">4</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a>x, y_one_hot, y <span class="op">=</span> tfm_dls.one_batch()</span>
+<span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a>x.shape, y_one_hot.shape, y.shape</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>(torch.Size([4, 200, 1]), torch.Size([4, 200, 5]), torch.Size([4, 200]))</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb54"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a>idx <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a>x[idx, :<span class="dv">5</span>], y_one_hot[idx, :<span class="dv">5</span>], y[idx, :<span class="dv">5</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>(tensor([[ 0.0000],
+         [-0.0976],
+         [-0.0456],
+         [ 0.0426],
+         [ 0.0395]], device='cuda:0'),
+ tensor([[-1., -1., -1., -1., -1.],
+         [ 0.,  0.,  1.,  0.,  0.],
+         [ 0.,  0.,  1.,  0.,  0.],
+         [ 0.,  0.,  1.,  0.,  0.],
+         [ 0.,  0.,  1.,  0.,  0.]], device='cuda:0'),
+ tensor([2, 2, 2, 2, 2], device='cuda:0'))</code></pre>
+</div>
+</div>
+<hr>
+<p><a href="https://github.com/BorjaRequena/step/blob/main/step/data.py#L437" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="get_andi_valid_dls" class="level3">
+<h3 class="anchored" data-anchor-id="get_andi_valid_dls">get_andi_valid_dls</h3>
+<blockquote class="blockquote">
+<pre><code> get_andi_valid_dls (bs=128, pct=1, dim=1, task=1, path=None)</code></pre>
+</blockquote>
+<p>Obtain <code>DataLoaders</code> from AnDi challenge validation data.</p>
+<p>When validating on the <a href="http://andi-challenge.org/">AnDi challenge</a> data, in some cases, it may be convenient to work with <code>DataLoaders</code> instaed of <code>DataFrames</code>, which can be obtained through <a href="https://BorjaRequena.github.io/step/source/data.html#load_andi_data"><code>load_andi_data</code></a>. These are mainly intended to test our models. Thus, notice that the split percentage for train/validation is set to 100% validation by default.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb57"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a>andi_dls <span class="op">=</span> get_andi_valid_dls(dim<span class="op">=</span><span class="dv">2</span>)</span>
+<span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a>x, y <span class="op">=</span> andi_dls.valid.one_batch()</span>
+<span id="cb57-3"><a href="#cb57-3" aria-hidden="true" tabindex="-1"></a>x.shape, y.shape</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>(torch.Size([128, 200, 2]), torch.Size([128, 0]))</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb59"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a>x[<span class="dv">0</span>, :<span class="dv">5</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>tensor([[ 0.0000,  0.0000],
+        [-0.5156,  0.5875],
+        [-0.8383,  0.5096],
+        [-1.4615,  0.5320],
+        [-1.7552,  0.4109]])</code></pre>
+</div>
+</div>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.450">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="description" content="Utility functionalities or recurrent operations for the machine learning pipeline.">
+
+<title>STEP - Utils</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<link rel="stylesheet" href="../styles.css">
+<meta property="og:title" content="STEP - Utils">
+<meta property="og:description" content="Utility functionalities or recurrent operations for the machine learning pipeline.">
+<meta property="og:site-name" content="STEP">
+<meta name="twitter:title" content="STEP - Utils">
+<meta name="twitter:description" content="Utility functionalities or recurrent operations for the machine learning pipeline.">
+<meta name="twitter:card" content="summary">
+</head>
+
+<body class="nav-sidebar floating nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a href="../index.html" class="navbar-brand navbar-brand-logo">
+    <img src="../logo.png" alt="" class="navbar-logo">
+    </a>
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">STEP</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/BorjaRequena/step" rel="" target=""><i class="bi bi-github" role="img">
+</i> 
+ <span class="menu-text"></span></a>
+  </li>  
+</ul>
+            <div class="quarto-navbar-tools">
+</div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../source/data.html">Documentation</a></li><li class="breadcrumb-item"><a href="../source/utils.html">Utils</a></li></ol></nav>
+      <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+      </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal sidebar-navigation floating overflow-auto">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Getting started</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">
+ <span class="menu-text">Documentation</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../source/data.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Data</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../source/models.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Models</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../source/baselines.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Baselines</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../source/utils.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Utils</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../tutorials/index_tutorials.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Tutorials</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tutorials/model_training.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Model training</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tutorials/analysis_bm.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Benchmark: Brownian motion</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tutorials/analysis_andi.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Benchmark: anomalous diffusion</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tutorials/anomalous_from_normal.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Anomalous diffusion from normal diffusion</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#tensor-operations" id="toc-tensor-operations" class="nav-link active" data-scroll-target="#tensor-operations">Tensor operations</a>
+  <ul class="collapse">
+  <li><a href="#get_displacements" id="toc-get_displacements" class="nav-link" data-scroll-target="#get_displacements">get_displacements</a></li>
+  <li><a href="#split_tensor" id="toc-split_tensor" class="nav-link" data-scroll-target="#split_tensor">split_tensor</a></li>
+  <li><a href="#lengths_from_cps" id="toc-lengths_from_cps" class="nav-link" data-scroll-target="#lengths_from_cps">lengths_from_cps</a></li>
+  </ul></li>
+  <li><a href="#segmentation-post-processing" id="toc-segmentation-post-processing" class="nav-link" data-scroll-target="#segmentation-post-processing">Segmentation post-processing</a>
+  <ul class="collapse">
+  <li><a href="#fit_segments" id="toc-fit_segments" class="nav-link" data-scroll-target="#fit_segments">fit_segments</a></li>
+  <li><a href="#post_process_prediction" id="toc-post_process_prediction" class="nav-link" data-scroll-target="#post_process_prediction">post_process_prediction</a></li>
+  <li><a href="#abundance" id="toc-abundance" class="nav-link" data-scroll-target="#abundance">abundance</a></li>
+  <li><a href="#majority_vote" id="toc-majority_vote" class="nav-link" data-scroll-target="#majority_vote">majority_vote</a></li>
+  <li><a href="#get_split_classes" id="toc-get_split_classes" class="nav-link" data-scroll-target="#get_split_classes">get_split_classes</a></li>
+  <li><a href="#change_points_from_splits" id="toc-change_points_from_splits" class="nav-link" data-scroll-target="#change_points_from_splits">change_points_from_splits</a></li>
+  <li><a href="#get_splits" id="toc-get_splits" class="nav-link" data-scroll-target="#get_splits">get_splits</a></li>
+  <li><a href="#find_change_points" id="toc-find_change_points" class="nav-link" data-scroll-target="#find_change_points">find_change_points</a></li>
+  </ul></li>
+  <li><a href="#model-evaluation" id="toc-model-evaluation" class="nav-link" data-scroll-target="#model-evaluation">Model evaluation</a>
+  <ul class="collapse">
+  <li><a href="#mean_relative_error" id="toc-mean_relative_error" class="nav-link" data-scroll-target="#mean_relative_error">mean_relative_error</a></li>
+  <li><a href="#mean_absolute_error" id="toc-mean_absolute_error" class="nav-link" data-scroll-target="#mean_absolute_error">mean_absolute_error</a></li>
+  <li><a href="#jaccard_index" id="toc-jaccard_index" class="nav-link" data-scroll-target="#jaccard_index">jaccard_index</a></li>
+  <li><a href="#assign_changepoints" id="toc-assign_changepoints" class="nav-link" data-scroll-target="#assign_changepoints">assign_changepoints</a></li>
+  <li><a href="#evaluate_cp_prediction" id="toc-evaluate_cp_prediction" class="nav-link" data-scroll-target="#evaluate_cp_prediction">evaluate_cp_prediction</a></li>
+  <li><a href="#validate_andi_3_alpha" id="toc-validate_andi_3_alpha" class="nav-link" data-scroll-target="#validate_andi_3_alpha">validate_andi_3_alpha</a></li>
+  <li><a href="#validate_andi_3_models" id="toc-validate_andi_3_models" class="nav-link" data-scroll-target="#validate_andi_3_models">validate_andi_3_models</a></li>
+  <li><a href="#validate_andi_1" id="toc-validate_andi_1" class="nav-link" data-scroll-target="#validate_andi_1">validate_andi_1</a></li>
+  <li><a href="#eval_andi_metrics" id="toc-eval_andi_metrics" class="nav-link" data-scroll-target="#eval_andi_metrics">eval_andi_metrics</a></li>
+  </ul></li>
+  <li><a href="#figures" id="toc-figures" class="nav-link" data-scroll-target="#figures">Figures</a></li>
+  </ul>
+<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/BorjaRequena/step/issues/new" class="toc-action">Report an issue</a></p></div></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Utils</h1>
+</div>
+
+<div>
+  <div class="description">
+    Utility functionalities or recurrent operations for the machine learning pipeline.
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<!-- WARNING: THIS FILE WAS AUTOGENERATED! DO NOT EDIT! -->
+<section id="tensor-operations" class="level1">
+<h1>Tensor operations</h1>
+<hr>
+<p><a href="https://github.com/BorjaRequena/step/blob/main/step/utils.py#L33" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<section id="get_displacements" class="level3">
+<h3 class="anchored" data-anchor-id="get_displacements">get_displacements</h3>
+<blockquote class="blockquote">
+<pre><code> get_displacements (x)</code></pre>
+</blockquote>
+<p>Returns the displacements of trajectory <code>x</code> [dim, length].</p>
+<hr>
+<p><a href="https://github.com/BorjaRequena/step/blob/main/step/utils.py#L28" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="split_tensor" class="level3">
+<h3 class="anchored" data-anchor-id="split_tensor">split_tensor</h3>
+<blockquote class="blockquote">
+<pre><code> split_tensor (t, indices)</code></pre>
+</blockquote>
+<p>Splits input tensor <code>t</code> according to indices in the first dimension.</p>
+<hr>
+<p><a href="https://github.com/BorjaRequena/step/blob/main/step/utils.py#L23" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="lengths_from_cps" class="level3">
+<h3 class="anchored" data-anchor-id="lengths_from_cps">lengths_from_cps</h3>
+<blockquote class="blockquote">
+<pre><code> lengths_from_cps (cps, length=200)</code></pre>
+</blockquote>
+<p>Returns segment lengths determined by <code>cps</code> and a total length <code>length</code>.</p>
+</section>
+</section>
+<section id="segmentation-post-processing" class="level1">
+<h1>Segmentation post-processing</h1>
+<hr>
+<p><a href="https://github.com/BorjaRequena/step/blob/main/step/utils.py#L40" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<section id="fit_segments" class="level3">
+<h3 class="anchored" data-anchor-id="fit_segments">fit_segments</h3>
+<blockquote class="blockquote">
+<pre><code> fit_segments (pred, pen=1.0, return_cps=False, kernel='linear',
+               min_size=2, jump=1, params=None)</code></pre>
+</blockquote>
+<p>Fit piecewise constant segments to input signal <code>pred</code>.</p>
+<p><a href="https://BorjaRequena.github.io/step/source/utils.html#fit_segments"><code>fit_segments</code></a> is mainly intended to process predictions of continuous values. However, the following functinos are mainly intended to post-process discrete predictions. Notably, <a href="https://BorjaRequena.github.io/step/source/utils.html#post_process_prediction"><code>post_process_prediction</code></a> takes a prediction of discrete categories over a trajectory and extracts the most likely changepoints and segments, minimizing the impact of spurious mistakes along the predicted segment (see the example below).</p>
+<hr>
+<p><a href="https://github.com/BorjaRequena/step/blob/main/step/utils.py#L87" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="post_process_prediction" class="level3">
+<h3 class="anchored" data-anchor-id="post_process_prediction">post_process_prediction</h3>
+<blockquote class="blockquote">
+<pre><code> post_process_prediction (pred, n_change_points=1)</code></pre>
+</blockquote>
+<p>Segmentation prediction post-processing to find change points and classes.</p>
+<hr>
+<p><a href="https://github.com/BorjaRequena/step/blob/main/step/utils.py#L81" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="abundance" class="level3">
+<h3 class="anchored" data-anchor-id="abundance">abundance</h3>
+<blockquote class="blockquote">
+<pre><code> abundance (val, t)</code></pre>
+</blockquote>
+<p>Abundance of value <code>val</code> in tensor <code>t</code>.</p>
+<hr>
+<p><a href="https://github.com/BorjaRequena/step/blob/main/step/utils.py#L75" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="majority_vote" class="level3">
+<h3 class="anchored" data-anchor-id="majority_vote">majority_vote</h3>
+<blockquote class="blockquote">
+<pre><code> majority_vote (t)</code></pre>
+</blockquote>
+<p>Returns majoritary value from <code>t</code>.</p>
+<hr>
+<p><a href="https://github.com/BorjaRequena/step/blob/main/step/utils.py#L71" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="get_split_classes" class="level3">
+<h3 class="anchored" data-anchor-id="get_split_classes">get_split_classes</h3>
+<blockquote class="blockquote">
+<pre><code> get_split_classes (splits)</code></pre>
+</blockquote>
+<p>Returns majority class of each split.</p>
+<hr>
+<p><a href="https://github.com/BorjaRequena/step/blob/main/step/utils.py#L67" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="change_points_from_splits" class="level3">
+<h3 class="anchored" data-anchor-id="change_points_from_splits">change_points_from_splits</h3>
+<blockquote class="blockquote">
+<pre><code> change_points_from_splits (splits)</code></pre>
+</blockquote>
+<p>Returns change point position from split tensor.</p>
+<hr>
+<p><a href="https://github.com/BorjaRequena/step/blob/main/step/utils.py#L55" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="get_splits" class="level3">
+<h3 class="anchored" data-anchor-id="get_splits">get_splits</h3>
+<blockquote class="blockquote">
+<pre><code> get_splits (t)</code></pre>
+</blockquote>
+<p>Splits tensor <code>t</code> into chunks with the same value.</p>
+<hr>
+<p><a href="https://github.com/BorjaRequena/step/blob/main/step/utils.py#L51" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="find_change_points" class="level3">
+<h3 class="anchored" data-anchor-id="find_change_points">find_change_points</h3>
+<blockquote class="blockquote">
+<pre><code> find_change_points (t)</code></pre>
+</blockquote>
+<p>Finds points in tensor <code>t</code> where the value changes.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>prediction <span class="op">=</span> tensor([<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">2</span>, <span class="dv">2</span>, <span class="dv">2</span>, <span class="dv">2</span>, <span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">2</span>])</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>cps, classes, splits <span class="op">=</span> post_process_prediction(prediction)</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>cps, classes, splits</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>(tensor([8]),
+ [tensor([0]), tensor([2])],
+ [tensor([0, 0, 0, 0, 1, 1, 0, 0]), tensor([2, 2, 2, 2, 1, 2, 2])])</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="model-evaluation" class="level1">
+<h1>Model evaluation</h1>
+<hr>
+<p><a href="https://github.com/BorjaRequena/step/blob/main/step/utils.py#L188" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<section id="mean_relative_error" class="level3">
+<h3 class="anchored" data-anchor-id="mean_relative_error">mean_relative_error</h3>
+<blockquote class="blockquote">
+<pre><code> mean_relative_error (pred, true, base=10)</code></pre>
+</blockquote>
+<p>Mean relative error assuming <code>pred</code> and <code>true</code> in log_base.</p>
+<hr>
+<p><a href="https://github.com/BorjaRequena/step/blob/main/step/utils.py#L184" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="mean_absolute_error" class="level3">
+<h3 class="anchored" data-anchor-id="mean_absolute_error">mean_absolute_error</h3>
+<blockquote class="blockquote">
+<pre><code> mean_absolute_error (pred, true)</code></pre>
+</blockquote>
+<p>Mean absolute error between <code>pred</code> and <code>true</code>.</p>
+<hr>
+<p><a href="https://github.com/BorjaRequena/step/blob/main/step/utils.py#L224" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="jaccard_index" class="level3">
+<h3 class="anchored" data-anchor-id="jaccard_index">jaccard_index</h3>
+<blockquote class="blockquote">
+<pre><code> jaccard_index (true_positive, false_positive, false_negative)</code></pre>
+</blockquote>
+<p>Computes the Jaccard index a.k.a. Tanimoto index.</p>
+<hr>
+<p><a href="https://github.com/BorjaRequena/step/blob/main/step/utils.py#L216" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="assign_changepoints" class="level3">
+<h3 class="anchored" data-anchor-id="assign_changepoints">assign_changepoints</h3>
+<blockquote class="blockquote">
+<pre><code> assign_changepoints (true, pred)</code></pre>
+</blockquote>
+<p>Matches predicted and true changepoints solving a linear sum assignment problem.</p>
+<hr>
+<p><a href="https://github.com/BorjaRequena/step/blob/main/step/utils.py#L194" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="evaluate_cp_prediction" class="level3">
+<h3 class="anchored" data-anchor-id="evaluate_cp_prediction">evaluate_cp_prediction</h3>
+<blockquote class="blockquote">
+<pre><code> evaluate_cp_prediction (true, pred, changepoint_threshold=5)</code></pre>
+</blockquote>
+<p>Evaluates the change point prediction.</p>
+<p>Since the changepoint detection algorithm can provide an arbitrary number of change points, we solve a linear sum assignment problem to perform the matching between the ground truth and the predicted changepoints.</p>
+<p>Then, we consider a valid prediction, i.e., a true positive (TP), those changepoints that lie within a trheshold of their corresponding ground truth. This way, all the predicted change points that are not TP are false positives (FP). Finally, the ground truth change points that do not have a predicted counterpart within the threshold are false negatives (FN).</p>
+<p>To evaluate the change point detection, we use the Jaccard index, which is a function of the TP, FP and FN: <span class="math display">\[JI = \frac{TP}{TP + FP + FN}\,.\]</span></p>
+<hr>
+<p><a href="https://github.com/BorjaRequena/step/blob/main/step/utils.py#L288" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="validate_andi_3_alpha" class="level3">
+<h3 class="anchored" data-anchor-id="validate_andi_3_alpha">validate_andi_3_alpha</h3>
+<blockquote class="blockquote">
+<pre><code> validate_andi_3_alpha (m, dim=1, task=3, bs=128, pct=1, path=None)</code></pre>
+</blockquote>
+<p>Validates model on the AnDi test set for task 3 (segmentation) predicting anomalous exponents.</p>
+<hr>
+<p><a href="https://github.com/BorjaRequena/step/blob/main/step/utils.py#L272" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="validate_andi_3_models" class="level3">
+<h3 class="anchored" data-anchor-id="validate_andi_3_models">validate_andi_3_models</h3>
+<blockquote class="blockquote">
+<pre><code> validate_andi_3_models (m, dim=1, task=3, bs=128, pct=1, path=None)</code></pre>
+</blockquote>
+<p>Validates model on the AnDi test set for task 3 (segmentation) predicting diffusion models.</p>
+<hr>
+<p><a href="https://github.com/BorjaRequena/step/blob/main/step/utils.py#L259" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="validate_andi_1" class="level3">
+<h3 class="anchored" data-anchor-id="validate_andi_1">validate_andi_1</h3>
+<blockquote class="blockquote">
+<pre><code> validate_andi_1 (m, dim=1, bs=1, pct=1, task=1, path=None)</code></pre>
+</blockquote>
+<p>Validates model on the AnDi test set for task 1 (anomalous exponent).</p>
+<hr>
+<p><a href="https://github.com/BorjaRequena/step/blob/main/step/utils.py#L229" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="eval_andi_metrics" class="level3">
+<h3 class="anchored" data-anchor-id="eval_andi_metrics">eval_andi_metrics</h3>
+<blockquote class="blockquote">
+<pre><code> eval_andi_metrics (dls, model)</code></pre>
+</blockquote>
+<p>Evaluates model in validation set in order to obtain AnDi challenge metrics.</p>
+</section>
+</section>
+<section id="figures" class="level1">
+<h1>Figures</h1>
+<p>Here, we define colors and colormaps for our plots.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>color_order <span class="op">=</span> [<span class="st">'blue'</span>, <span class="st">'orange'</span>, <span class="st">'yellow'</span>, <span class="st">'purple'</span>, <span class="st">'green'</span>]</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>color_dict <span class="op">=</span> {</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">'blue'</span>:   {<span class="st">'dark'</span>: (<span class="fl">0.2745098</span>, <span class="fl">0.4</span>, <span class="fl">0.6</span>),</span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>               <span class="st">'medium'</span>: (<span class="fl">0.39607843</span>, <span class="fl">0.5254902</span>, <span class="fl">0.71764706</span>),</span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>               <span class="st">'light'</span>: (<span class="fl">0.65098039</span>, <span class="fl">0.79215686</span>, <span class="fl">0.94117647</span>)},</span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">'orange'</span>: {<span class="st">'dark'</span>: (<span class="fl">0.71764706</span>, <span class="fl">0.36470588</span>, <span class="fl">0.24313725</span>),</span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>               <span class="st">'medium'</span>: (<span class="fl">0.88627451</span>, <span class="fl">0.4627451</span>, <span class="fl">0.34901961</span>),</span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>               <span class="st">'light'</span>: (<span class="fl">1.0</span>, <span class="fl">0.63921569</span>, <span class="fl">0.44705882</span>)},</span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>    <span class="st">'yellow'</span>: {<span class="st">'dark'</span>: (<span class="fl">0.85882353</span>, <span class="fl">0.58431373</span>, <span class="fl">0.18039216</span>),</span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a>               <span class="st">'medium'</span>: (<span class="fl">0.89803922</span>, <span class="fl">0.68235294</span>, <span class="fl">0.39607843</span>),</span>
+<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a>               <span class="st">'light'</span>: (<span class="fl">0.96470588</span>, <span class="fl">0.84705882</span>, <span class="fl">0.52941176</span>)},</span>
+<span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a>    <span class="st">'purple'</span>: {<span class="st">'dark'</span>: (<span class="fl">0.6627451</span>, <span class="fl">0.16078431</span>, <span class="fl">0.30980392</span>),</span>
+<span id="cb23-13"><a href="#cb23-13" aria-hidden="true" tabindex="-1"></a>               <span class="st">'medium'</span>: (<span class="fl">0.7372549</span>, <span class="fl">0.39607843</span>, <span class="fl">0.55294118</span>),</span>
+<span id="cb23-14"><a href="#cb23-14" aria-hidden="true" tabindex="-1"></a>               <span class="st">'light'</span>: (<span class="fl">0.89019608</span>, <span class="fl">0.38823529</span>, <span class="fl">0.52941176</span>)},</span>
+<span id="cb23-15"><a href="#cb23-15" aria-hidden="true" tabindex="-1"></a>    <span class="st">'green'</span>:  {<span class="st">'dark'</span>: (<span class="fl">0.22352941</span>, <span class="fl">0.46666667</span>, <span class="fl">0.4549019607843137</span>),</span>
+<span id="cb23-16"><a href="#cb23-16" aria-hidden="true" tabindex="-1"></a>               <span class="st">'medium'</span>: (<span class="fl">0.29803922</span>, <span class="fl">0.60784314</span>, <span class="fl">0.58431373</span>),</span>
+<span id="cb23-17"><a href="#cb23-17" aria-hidden="true" tabindex="-1"></a>               <span class="st">'light'</span>: (<span class="fl">0.50980392</span>, <span class="fl">0.76862745</span>, <span class="fl">0.76470588</span>)}</span>
+<span id="cb23-18"><a href="#cb23-18" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb23-19"><a href="#cb23-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-20"><a href="#cb23-20" aria-hidden="true" tabindex="-1"></a>colors <span class="op">=</span> [color_dict[k][<span class="st">'medium'</span>] <span class="cf">for</span> k <span class="kw">in</span> color_order]</span>
+<span id="cb23-21"><a href="#cb23-21" aria-hidden="true" tabindex="-1"></a>colors_light <span class="op">=</span> [color_dict[k][<span class="st">'light'</span>] <span class="cf">for</span> k <span class="kw">in</span> color_order]</span>
+<span id="cb23-22"><a href="#cb23-22" aria-hidden="true" tabindex="-1"></a>colors_dark <span class="op">=</span> [color_dict[k][<span class="st">'dark'</span>] <span class="cf">for</span> k <span class="kw">in</span> color_order]</span>
+<span id="cb23-23"><a href="#cb23-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-24"><a href="#cb23-24" aria-hidden="true" tabindex="-1"></a>cmap_hist1 <span class="op">=</span> clr.LinearSegmentedColormap.from_list(</span>
+<span id="cb23-25"><a href="#cb23-25" aria-hidden="true" tabindex="-1"></a>    <span class="st">'custom cm'</span>, [<span class="st">'w'</span>, </span>
+<span id="cb23-26"><a href="#cb23-26" aria-hidden="true" tabindex="-1"></a>                  color_dict[<span class="st">'blue'</span>][<span class="st">'light'</span>],</span>
+<span id="cb23-27"><a href="#cb23-27" aria-hidden="true" tabindex="-1"></a>                  color_dict[<span class="st">'blue'</span>][<span class="st">'dark'</span>]],</span>
+<span id="cb23-28"><a href="#cb23-28" aria-hidden="true" tabindex="-1"></a>                  N<span class="op">=</span><span class="dv">256</span></span>
+<span id="cb23-29"><a href="#cb23-29" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb23-30"><a href="#cb23-30" aria-hidden="true" tabindex="-1"></a>cmap_hist2 <span class="op">=</span> clr.LinearSegmentedColormap.from_list(</span>
+<span id="cb23-31"><a href="#cb23-31" aria-hidden="true" tabindex="-1"></a>    <span class="st">'custom cm'</span>, [<span class="st">'w'</span>, </span>
+<span id="cb23-32"><a href="#cb23-32" aria-hidden="true" tabindex="-1"></a>                  color_dict[<span class="st">'orange'</span>][<span class="st">'light'</span>],</span>
+<span id="cb23-33"><a href="#cb23-33" aria-hidden="true" tabindex="-1"></a>                  color_dict[<span class="st">'orange'</span>][<span class="st">'dark'</span>]],</span>
+<span id="cb23-34"><a href="#cb23-34" aria-hidden="true" tabindex="-1"></a>                  N<span class="op">=</span><span class="dv">256</span></span>
+<span id="cb23-35"><a href="#cb23-35" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb23-36"><a href="#cb23-36" aria-hidden="true" tabindex="-1"></a>cmap_points <span class="op">=</span> clr.LinearSegmentedColormap.from_list(</span>
+<span id="cb23-37"><a href="#cb23-37" aria-hidden="true" tabindex="-1"></a>    <span class="st">'custom cm'</span>, [color_dict[<span class="st">'yellow'</span>][<span class="st">'light'</span>], </span>
+<span id="cb23-38"><a href="#cb23-38" aria-hidden="true" tabindex="-1"></a>                  color_dict[<span class="st">'purple'</span>][<span class="st">'light'</span>],</span>
+<span id="cb23-39"><a href="#cb23-39" aria-hidden="true" tabindex="-1"></a>                  color_dict[<span class="st">'blue'</span>][<span class="st">'medium'</span>]],</span>
+<span id="cb23-40"><a href="#cb23-40" aria-hidden="true" tabindex="-1"></a>                  N<span class="op">=</span><span class="dv">256</span></span>
+<span id="cb23-41"><a href="#cb23-41" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb23-42"><a href="#cb23-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-43"><a href="#cb23-43" aria-hidden="true" tabindex="-1"></a>fig_size <span class="op">=</span> <span class="dv">4</span></span>
+<span id="cb23-44"><a href="#cb23-44" aria-hidden="true" tabindex="-1"></a>linewidth <span class="op">=</span> <span class="dv">2</span></span>
+<span id="cb23-45"><a href="#cb23-45" aria-hidden="true" tabindex="-1"></a>alpha_grid <span class="op">=</span> <span class="fl">0.2</span></span>
+<span id="cb23-46"><a href="#cb23-46" aria-hidden="true" tabindex="-1"></a>scatter_size <span class="op">=</span> <span class="dv">12</span></span>
+<span id="cb23-47"><a href="#cb23-47" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-48"><a href="#cb23-48" aria-hidden="true" tabindex="-1"></a>D_units <span class="op">=</span> <span class="st">"($\mu$m$^2$/s)"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

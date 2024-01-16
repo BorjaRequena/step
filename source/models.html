@@ -1,0 +1,1673 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.450">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="description" content="Architectures for trajectory segmentation.">
+
+<title>STEP - Models</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<link rel="stylesheet" href="../styles.css">
+<meta property="og:title" content="STEP - Models">
+<meta property="og:description" content="Architectures for trajectory segmentation.">
+<meta property="og:image" content="https://BorjaRequena.github.io/step/source/01_models_files/figure-html/cell-17-output-1.png">
+<meta property="og:site-name" content="STEP">
+<meta property="og:image:height" content="494">
+<meta property="og:image:width" content="861">
+<meta name="twitter:title" content="STEP - Models">
+<meta name="twitter:description" content="Architectures for trajectory segmentation.">
+<meta name="twitter:image" content="https://BorjaRequena.github.io/step/source/01_models_files/figure-html/cell-17-output-1.png">
+<meta name="twitter:image-height" content="494">
+<meta name="twitter:image-width" content="861">
+<meta name="twitter:card" content="summary_large_image">
+</head>
+
+<body class="nav-sidebar floating nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a href="../index.html" class="navbar-brand navbar-brand-logo">
+    <img src="../logo.png" alt="" class="navbar-logo">
+    </a>
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">STEP</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/BorjaRequena/step" rel="" target=""><i class="bi bi-github" role="img">
+</i> 
+ <span class="menu-text"></span></a>
+  </li>  
+</ul>
+            <div class="quarto-navbar-tools">
+</div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../source/data.html">Documentation</a></li><li class="breadcrumb-item"><a href="../source/models.html">Models</a></li></ol></nav>
+      <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+      </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal sidebar-navigation floating overflow-auto">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Getting started</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true">
+ <span class="menu-text">Documentation</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../source/data.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Data</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../source/models.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Models</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../source/baselines.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Baselines</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../source/utils.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Utils</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../tutorials/index_tutorials.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Tutorials</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tutorials/model_training.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Model training</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tutorials/analysis_bm.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Benchmark: Brownian motion</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tutorials/analysis_andi.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Benchmark: anomalous diffusion</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tutorials/anomalous_from_normal.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Anomalous diffusion from normal diffusion</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#utility-layers" id="toc-utility-layers" class="nav-link active" data-scroll-target="#utility-layers">Utility layers</a>
+  <ul class="collapse">
+  <li><a href="#tfm_encoder" id="toc-tfm_encoder" class="nav-link" data-scroll-target="#tfm_encoder">tfm_encoder</a></li>
+  <li><a href="#concatpooling" id="toc-concatpooling" class="nav-link" data-scroll-target="#concatpooling">ConcatPooling</a></li>
+  <li><a href="#transpose" id="toc-transpose" class="nav-link" data-scroll-target="#transpose">Transpose</a></li>
+  <li><a href="#normalization" id="toc-normalization" class="nav-link" data-scroll-target="#normalization">Normalization</a></li>
+  <li><a href="#get_act" id="toc-get_act" class="nav-link" data-scroll-target="#get_act">get_act</a></li>
+  </ul></li>
+  <li><a href="#dense-layers" id="toc-dense-layers" class="nav-link" data-scroll-target="#dense-layers">Dense layers</a>
+  <ul class="collapse">
+  <li><a href="#linbndroptrp" id="toc-linbndroptrp" class="nav-link" data-scroll-target="#linbndroptrp">LinBnDropTrp</a></li>
+  <li><a href="#classifier" id="toc-classifier" class="nav-link" data-scroll-target="#classifier">Classifier</a></li>
+  </ul></li>
+  <li><a href="#self-attention-based-models" id="toc-self-attention-based-models" class="nav-link" data-scroll-target="#self-attention-based-models">Self-attention-based models</a>
+  <ul class="collapse">
+  <li><a href="#transformer" id="toc-transformer" class="nav-link" data-scroll-target="#transformer">Transformer</a></li>
+  <li><a href="#positionalencoding" id="toc-positionalencoding" class="nav-link" data-scroll-target="#positionalencoding">PositionalEncoding</a></li>
+  <li><a href="#encoderclassifier" id="toc-encoderclassifier" class="nav-link" data-scroll-target="#encoderclassifier">EncoderClassifier</a></li>
+  </ul></li>
+  <li><a href="#combined-convolutional-and-self-attention-models" id="toc-combined-convolutional-and-self-attention-models" class="nav-link" data-scroll-target="#combined-convolutional-and-self-attention-models">Combined convolutional and self-attention models</a>
+  <ul class="collapse">
+  <li><a href="#convattn" id="toc-convattn" class="nav-link" data-scroll-target="#convattn">ConvAttn</a></li>
+  <li><a href="#xresblocks" id="toc-xresblocks" class="nav-link" data-scroll-target="#xresblocks">XResBlocks</a></li>
+  <li><a href="#xresattn" id="toc-xresattn" class="nav-link" data-scroll-target="#xresattn">XResAttn</a></li>
+  <li><a href="#logxresattn" id="toc-logxresattn" class="nav-link" data-scroll-target="#logxresattn">LogXResAttn</a></li>
+  <li><a href="#u-net" id="toc-u-net" class="nav-link" data-scroll-target="#u-net">U-net</a>
+  <ul class="collapse">
+  <li><a href="#icnr_init_general" id="toc-icnr_init_general" class="nav-link" data-scroll-target="#icnr_init_general">icnr_init_general</a></li>
+  <li><a href="#generalpixleshuffle" id="toc-generalpixleshuffle" class="nav-link" data-scroll-target="#generalpixleshuffle">GeneralPixleShuffle</a></li>
+  <li><a href="#pixelshuffleupsampling" id="toc-pixelshuffleupsampling" class="nav-link" data-scroll-target="#pixelshuffleupsampling">PixelShuffleUpsampling</a></li>
+  <li><a href="#unetblock" id="toc-unetblock" class="nav-link" data-scroll-target="#unetblock">UnetBlock</a></li>
+  <li><a href="#dummy_eval" id="toc-dummy_eval" class="nav-link" data-scroll-target="#dummy_eval">dummy_eval</a></li>
+  <li><a href="#in_channels" id="toc-in_channels" class="nav-link" data-scroll-target="#in_channels">in_channels</a></li>
+  <li><a href="#model_sizes" id="toc-model_sizes" class="nav-link" data-scroll-target="#model_sizes">model_sizes</a></li>
+  <li><a href="#get_sz_change_idxs" id="toc-get_sz_change_idxs" class="nav-link" data-scroll-target="#get_sz_change_idxs">get_sz_change_idxs</a></li>
+  <li><a href="#resizetoorig" id="toc-resizetoorig" class="nav-link" data-scroll-target="#resizetoorig">ResizeToOrig</a></li>
+  <li><a href="#attndynamicunet" id="toc-attndynamicunet" class="nav-link" data-scroll-target="#attndynamicunet">AttnDynamicUnet</a></li>
+  <li><a href="#unetmodel" id="toc-unetmodel" class="nav-link" data-scroll-target="#unetmodel">UnetModel</a></li>
+  </ul></li>
+  </ul></li>
+  </ul>
+<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/BorjaRequena/step/issues/new" class="toc-action">Report an issue</a></p></div></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Models</h1>
+</div>
+
+<div>
+  <div class="description">
+    Architectures for trajectory segmentation.
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<!-- WARNING: THIS FILE WAS AUTOGENERATED! DO NOT EDIT! -->
+<section id="utility-layers" class="level1">
+<h1>Utility layers</h1>
+<hr>
+<p><a href="https://github.com/BorjaRequena/step/blob/main/step/models.py#L48" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<section id="tfm_encoder" class="level3">
+<h3 class="anchored" data-anchor-id="tfm_encoder">tfm_encoder</h3>
+<blockquote class="blockquote">
+<pre><code> tfm_encoder (dim, n_head=1, n_layers=8, dim_ff=1024, dropout=0.1,
+              activation='relu')</code></pre>
+</blockquote>
+<p>Creates a <code>nn.TransformerEncoder</code>.</p>
+<hr>
+<p><a href="https://github.com/BorjaRequena/step/blob/main/step/models.py#L43" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="concatpooling" class="level3">
+<h3 class="anchored" data-anchor-id="concatpooling">ConcatPooling</h3>
+<blockquote class="blockquote">
+<pre><code> ConcatPooling (dim=-1)</code></pre>
+</blockquote>
+<p>Perform max and average pool over <code>dim</code>. Outputs [avg_pool, max_pool].</p>
+<hr>
+<p><a href="https://github.com/BorjaRequena/step/blob/main/step/models.py#L38" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="transpose" class="level3">
+<h3 class="anchored" data-anchor-id="transpose">Transpose</h3>
+<blockquote class="blockquote">
+<pre><code> Transpose (dims)</code></pre>
+</blockquote>
+<p>Transposition layer of dims.</p>
+<hr>
+<p><a href="https://github.com/BorjaRequena/step/blob/main/step/models.py#L32" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="normalization" class="level3">
+<h3 class="anchored" data-anchor-id="normalization">Normalization</h3>
+<blockquote class="blockquote">
+<pre><code> Normalization (dim=-1)</code></pre>
+</blockquote>
+<p>Z-Normalization over the designated dimension.</p>
+<hr>
+<p><a href="https://github.com/BorjaRequena/step/blob/main/step/models.py#L18" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="get_act" class="level3">
+<h3 class="anchored" data-anchor-id="get_act">get_act</h3>
+<blockquote class="blockquote">
+<pre><code> get_act (vocab_sz, yrange=(0, 2.05))</code></pre>
+</blockquote>
+<p>Provides a sigmoid or softmax activation according to inferring the task (regression or classification) from <code>vocab_sz</code>.</p>
+</section>
+</section>
+<section id="dense-layers" class="level1">
+<h1>Dense layers</h1>
+<hr>
+<p><a href="https://github.com/BorjaRequena/step/blob/main/step/models.py#L69" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<section id="linbndroptrp" class="level3">
+<h3 class="anchored" data-anchor-id="linbndroptrp">LinBnDropTrp</h3>
+<blockquote class="blockquote">
+<pre><code> LinBnDropTrp (n_in, n_out, bn=True, p=0.0, trp=(2, 1), act=None, ndim=1)</code></pre>
+</blockquote>
+<p>Linear layer with batch norm, dropout and transposition.</p>
+<hr>
+<p><a href="https://github.com/BorjaRequena/step/blob/main/step/models.py#L55" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="classifier" class="level3">
+<h3 class="anchored" data-anchor-id="classifier">Classifier</h3>
+<blockquote class="blockquote">
+<pre><code> Classifier (dims, ps, final_act=False, yrange=None, trp=(2, 1))</code></pre>
+</blockquote>
+<p>Dense classifier.</p>
+<p>We use the <a href="https://BorjaRequena.github.io/step/source/models.html#classifier"><code>Classifier</code></a> at the end of most of our models. It is comprised of <a href="https://BorjaRequena.github.io/step/source/models.html#linbndroptrp"><code>LinBnDropTrp</code></a> layers that allow us to obtain the desired output dimension for any task. Furthermore, we can specify whether to apply a final activation function through <code>final_act</code>. In classification tasks with pytorch, where we use <code>CrossEntropyLoss</code> or fastai’s <code>CrossEntropyLossFlat</code>, we do not want to apply the softmax activation function to the logits before passing them to the loss function.</p>
+</section>
+</section>
+<section id="self-attention-based-models" class="level1">
+<h1>Self-attention-based models</h1>
+<p>Extracting pointwise properties of a sequence can be understood as a translation task. Thus, it is natural to tackle the problem using a transformer or other purely self-attention-based architectures. Here, we provide a full <a href="https://BorjaRequena.github.io/step/source/models.html#transformer"><code>Transformer</code></a> (encoder + decoder), and an encoder-only model <a href="https://BorjaRequena.github.io/step/source/models.html#encoderclassifier"><code>EncoderClassifier</code></a>.</p>
+<hr>
+<p><a href="https://github.com/BorjaRequena/step/blob/main/step/models.py#L80" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<section id="transformer" class="level3">
+<h3 class="anchored" data-anchor-id="transformer">Transformer</h3>
+<blockquote class="blockquote">
+<pre><code> Transformer (dim, n_class=5, nhead_enc=1, nhead_dec=1,
+              num_encoder_layers=6, num_decoder_layers=6, dim_ff=2048,
+              dropout=0.1, activation='relu')</code></pre>
+</blockquote>
+<p>Transformer architecture.</p>
+<p>The <a href="https://BorjaRequena.github.io/step/source/models.html#transformer"><code>Transformer</code></a> implements a basic transformer architecture as introduced in <a href="https://proceedings.neurips.cc/paper/2017/hash/3f5ee243547dee91fbd053c1c4a845aa-Abstract.html">Attention is all you need</a> from Vaswani, et. al., in 2017.</p>
+<p>Let’s see an example of how to train a transformer to perform a segmentation task of the anomalous diffusion model in heterogeneous trajectories.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Data loaders</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>tfm_dls <span class="op">=</span> get_transformer_dls(bs<span class="op">=</span><span class="dv">128</span>)</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>tfm_dls.device <span class="op">=</span> default_device()</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Model</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>my_tf <span class="op">=</span> Transformer(<span class="dv">1</span>, num_encoder_layers<span class="op">=</span><span class="dv">4</span>, num_decoder_layers<span class="op">=</span><span class="dv">4</span>, dim_ff<span class="op">=</span><span class="dv">500</span>)</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>my_tf.to(default_device())</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Learner</span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>learn <span class="op">=</span> Learner(tfm_dls, my_tf, loss_func<span class="op">=</span>CrossEntropyLossFlat(), model_dir<span class="op">=</span>MODEL_PATH)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>learn.fit_one_cycle(<span class="dv">15</span>, lr_max<span class="op">=</span><span class="fl">1e-2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th">epoch</th>
+<th data-quarto-table-cell-role="th">train_loss</th>
+<th data-quarto-table-cell-role="th">valid_loss</th>
+<th data-quarto-table-cell-role="th">time</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>0</td>
+<td>0.081026</td>
+<td>0.063063</td>
+<td>00:41</td>
+</tr>
+<tr class="even">
+<td>1</td>
+<td>0.047181</td>
+<td>0.045920</td>
+<td>00:40</td>
+</tr>
+<tr class="odd">
+<td>2</td>
+<td>0.044656</td>
+<td>0.043783</td>
+<td>00:41</td>
+</tr>
+<tr class="even">
+<td>3</td>
+<td>0.043903</td>
+<td>0.043491</td>
+<td>00:40</td>
+</tr>
+<tr class="odd">
+<td>4</td>
+<td>0.043756</td>
+<td>0.043521</td>
+<td>00:41</td>
+</tr>
+<tr class="even">
+<td>5</td>
+<td>0.043616</td>
+<td>0.043354</td>
+<td>00:41</td>
+</tr>
+<tr class="odd">
+<td>6</td>
+<td>0.043514</td>
+<td>0.043158</td>
+<td>00:40</td>
+</tr>
+<tr class="even">
+<td>7</td>
+<td>0.043429</td>
+<td>0.043019</td>
+<td>00:41</td>
+</tr>
+<tr class="odd">
+<td>8</td>
+<td>0.043339</td>
+<td>0.043081</td>
+<td>00:41</td>
+</tr>
+<tr class="even">
+<td>9</td>
+<td>0.043207</td>
+<td>0.042961</td>
+<td>00:41</td>
+</tr>
+<tr class="odd">
+<td>10</td>
+<td>0.043100</td>
+<td>0.042880</td>
+<td>00:41</td>
+</tr>
+<tr class="even">
+<td>11</td>
+<td>0.043028</td>
+<td>0.042799</td>
+<td>00:41</td>
+</tr>
+<tr class="odd">
+<td>12</td>
+<td>0.042846</td>
+<td>0.042705</td>
+<td>00:40</td>
+</tr>
+<tr class="even">
+<td>13</td>
+<td>0.042833</td>
+<td>0.042656</td>
+<td>00:41</td>
+</tr>
+<tr class="odd">
+<td>14</td>
+<td>0.042852</td>
+<td>0.042683</td>
+<td>00:41</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Warning
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The task is particularly bad conditioned for a naive transformer training such as this one. The loss does get low, but it is mainly because the model learns to predict whatever the previous token was, so be careful!</p>
+</div>
+</div>
+<p>In these segmentation tasks over piecewise constant segments, the target may look like <span class="math inline">\([2,2,2,2,2,1,1,1,1,1]\)</span>. With such naive training scheme, the transformer learns to replicate whatever the last digit is and it fails to find the changepoints. Let’s have a look at some predictions.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>x, y_one_hot, y <span class="op">=</span> dls.one_batch()</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>learn.model.<span class="bu">eval</span>()</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>preds, pred_one_hot, outs <span class="op">=</span> learn.model.segment(x)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>preds[:<span class="dv">10</span>, :<span class="dv">10</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>tensor([[4, 4, 4, 4, 4, 4, 4, 4, 4, 4],
+        [4, 4, 4, 4, 4, 4, 4, 4, 4, 4],
+        [4, 4, 4, 4, 4, 4, 4, 4, 4, 4],
+        [4, 4, 4, 4, 4, 4, 4, 4, 4, 4],
+        [4, 4, 4, 4, 4, 4, 4, 4, 4, 4],
+        [4, 4, 4, 4, 4, 4, 4, 4, 4, 4],
+        [4, 4, 4, 4, 4, 4, 4, 4, 4, 4],
+        [4, 4, 4, 4, 4, 4, 4, 4, 4, 4],
+        [4, 4, 4, 4, 4, 4, 4, 4, 4, 4],
+        [4, 4, 4, 4, 4, 4, 4, 4, 4, 4]], device='cuda:0')</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>y[:<span class="dv">10</span>, :<span class="dv">10</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>tensor([[4, 4, 4, 4, 4, 4, 4, 4, 4, 4],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
+        [3, 3, 3, 3, 3, 3, 3, 3, 3, 3],
+        [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+        [2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
+        [3, 3, 3, 3, 3, 3, 3, 3, 3, 3],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        [4, 4, 4, 4, 4, 4, 4, 4, 4, 4]], device='cuda:0')</code></pre>
+</div>
+</div>
+<p>The model has correctly predicted the label for the first segment: <code>4</code> corresponding to SBM. However, it has then proceeded to replicate the label over the whole trajectory. You’ll need some extra tricks to train this :)</p>
+<hr>
+<p><a href="https://github.com/BorjaRequena/step/blob/main/step/models.py#L154" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="positionalencoding" class="level3">
+<h3 class="anchored" data-anchor-id="positionalencoding">PositionalEncoding</h3>
+<blockquote class="blockquote">
+<pre><code> PositionalEncoding (d_model, dropout=0.1, max_len=10000)</code></pre>
+</blockquote>
+<p>Same as <code>nn.Module</code>, but no need for subclasses to call <code>super().__init__</code></p>
+<p>Transformers see the trajectories all at once without any notion of distance between the points. Here, we implement a positional encoding based on the addition of sines and cosines to the data, as introduced in <a href="https://proceedings.neurips.cc/paper/2017/file/3f5ee243547dee91fbd053c1c4a845aa-Paper.pdf">the original paper</a>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>pe <span class="op">=</span> PositionalEncoding(<span class="dv">14</span>, max_len<span class="op">=</span><span class="dv">100</span>)</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>pos_enc <span class="op">=</span> pe.pos_enc.squeeze()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>fontsize, ticksize <span class="op">=</span> <span class="dv">20</span>, <span class="dv">15</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>fig, axes <span class="op">=</span> plt.subplots(<span class="dv">2</span>, sharex<span class="op">=</span><span class="va">True</span>, figsize<span class="op">=</span>(<span class="dv">14</span>, <span class="dv">8</span>))</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> sin, cos <span class="kw">in</span> <span class="bu">zip</span>(pos_enc.T[::<span class="dv">2</span>], pos_enc.T[<span class="dv">1</span>::<span class="dv">2</span>]):</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>    axes[<span class="dv">0</span>].plot(sin)</span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>    axes[<span class="dv">1</span>].plot(cos)</span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">1</span>].set_xlabel(<span class="st">"Position"</span>, fontsize<span class="op">=</span>fontsize)</span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">0</span>].set_ylabel(<span class="st">"sin activation"</span>, fontsize<span class="op">=</span>fontsize)</span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>axes[<span class="dv">1</span>].set_ylabel(<span class="st">"cos activation"</span>, fontsize<span class="op">=</span>fontsize)</span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> ax <span class="kw">in</span> axes:</span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a>    ax.grid()</span>
+<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a>    ax.tick_params(labelsize<span class="op">=</span>ticksize)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<p><img src="01_models_files/figure-html/cell-17-output-1.png" class="img-fluid"></p>
+</div>
+</div>
+<hr>
+<p><a href="https://github.com/BorjaRequena/step/blob/main/step/models.py#L174" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="encoderclassifier" class="level3">
+<h3 class="anchored" data-anchor-id="encoderclassifier">EncoderClassifier</h3>
+<blockquote class="blockquote">
+<pre><code> EncoderClassifier (dim, length=200, n_class=5, nhead_enc=1,
+                    num_encoder_layers=6, dim_ff=2048, dropout=0.1,
+                    activation='relu', linear_layers=[1024], ps=None,
+                    yrange=(0, 2.05), final_act=False, trp=(2, 1))</code></pre>
+</blockquote>
+<p>Transformer encoder with a linear classifier.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>dls <span class="op">=</span> get_segmentation_dls()</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>dls.device <span class="op">=</span> default_device()</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>enc <span class="op">=</span> EncoderClassifier(<span class="dv">1</span>, num_encoder_layers<span class="op">=</span><span class="dv">12</span>, dim_ff<span class="op">=</span><span class="dv">1024</span>)</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>enc.to(default_device())</span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>learn <span class="op">=</span> Learner(dls, enc, loss_func<span class="op">=</span>CrossEntropyLossFlat(), model_dir<span class="op">=</span>MODEL_PATH)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>learn.fit_one_cycle(<span class="dv">5</span>, lr_max<span class="op">=</span><span class="fl">1e-1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th">epoch</th>
+<th data-quarto-table-cell-role="th">train_loss</th>
+<th data-quarto-table-cell-role="th">valid_loss</th>
+<th data-quarto-table-cell-role="th">time</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>0</td>
+<td>1.611631</td>
+<td>1.609615</td>
+<td>00:58</td>
+</tr>
+<tr class="even">
+<td>1</td>
+<td>1.611847</td>
+<td>1.613333</td>
+<td>00:58</td>
+</tr>
+<tr class="odd">
+<td>2</td>
+<td>1.611033</td>
+<td>1.609803</td>
+<td>00:59</td>
+</tr>
+<tr class="even">
+<td>3</td>
+<td>1.609777</td>
+<td>1.609575</td>
+<td>00:59</td>
+</tr>
+<tr class="odd">
+<td>4</td>
+<td>1.609749</td>
+<td>1.609633</td>
+<td>01:00</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+</section>
+<section id="combined-convolutional-and-self-attention-models" class="level1">
+<h1>Combined convolutional and self-attention models</h1>
+<p>Convolutional models have seen great success characterizing diffusion trajectories, specially combined with recurrent neural networks, as seen in the <a href="https://www.nature.com/articles/s41467-021-26320-w">AnDi challenge paper</a>. We provide a few models that combine convolutional feature extractors with self-attention mechanisms.</p>
+<hr>
+<p><a href="https://github.com/BorjaRequena/step/blob/main/step/models.py#L214" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<section id="convattn" class="level3">
+<h3 class="anchored" data-anchor-id="convattn">ConvAttn</h3>
+<blockquote class="blockquote">
+<pre><code> ConvAttn (dim, n_class=5, conv_dims=[64, 128, 128], nhead_enc=1,
+           num_encoder_layers=6, dim_ff=2048, dropout=0.1,
+           linear_layers=[128], activation='relu', yrange=(0, 2.05))</code></pre>
+</blockquote>
+<p>Convolution layers with a transformer encoder.</p>
+<p><a href="https://BorjaRequena.github.io/step/source/models.html#convattn"><code>ConvAttn</code></a> is built out of basic convolutional layers that act as an embedding for a transformer encoder. There is a dense <a href="https://BorjaRequena.github.io/step/source/models.html#classifier"><code>Classifier</code></a> at the end that achieves the desired output dimensions.</p>
+<p>Performing a diffusion model segmentation task is the most straightforward, simply specify the trajectory dimension, which defaults to <code>dim=1</code> in the dataloaders and provide the appropiate loss function <code>CrossEntropyLossFlat</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>dls <span class="op">=</span> get_segmentation_dls()</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>dls.device <span class="op">=</span> default_device()</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> ConvAttn(<span class="dv">2</span>, conv_dims<span class="op">=</span>[<span class="dv">64</span>, <span class="dv">128</span>, <span class="dv">128</span>], num_encoder_layers<span class="op">=</span><span class="dv">8</span>, dim_ff<span class="op">=</span><span class="dv">512</span>, nhead_enc<span class="op">=</span><span class="dv">8</span>, linear_layers<span class="op">=</span>[])</span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>model.to(default_device())</span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>learn <span class="op">=</span> Learner(dls, model, loss_func<span class="op">=</span>CrossEntropyLossFlat(), model_dir<span class="op">=</span>MODEL_PATH)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>For anomalous exponent segmentation, we must specify the target <code>target='y_exp'</code> as well as provide the corresponding loss function, either <code>L1LossFlat</code> or <code>MSELossFlat</code>. Don’t forget to provide the model with the proper number of classes <code>n_class=1</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>dls <span class="op">=</span> get_segmentation_dls(target<span class="op">=</span><span class="st">'y_exp'</span>)</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>dls.device <span class="op">=</span> default_device()</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> ConvAttn(<span class="dv">1</span>, n_class<span class="op">=</span><span class="dv">1</span>, conv_dims<span class="op">=</span>[<span class="dv">32</span>, <span class="dv">64</span>, <span class="dv">128</span>, <span class="dv">256</span>], num_encoder_layers<span class="op">=</span><span class="dv">8</span>, dim_ff<span class="op">=</span><span class="dv">512</span>, nhead_enc<span class="op">=</span><span class="dv">8</span>, linear_layers<span class="op">=</span>[])</span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>model.to(default_device())</span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>learn <span class="op">=</span> Learner(dls, model, loss_func<span class="op">=</span>L1LossFlat(), model_dir<span class="op">=</span>MODEL_PATH)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>To train, we simply call <code>learn.fit_one_cycle</code>.</p>
+<hr>
+<p><a href="https://github.com/BorjaRequena/step/blob/main/step/models.py#L245" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="xresblocks" class="level3">
+<h3 class="anchored" data-anchor-id="xresblocks">XResBlocks</h3>
+<blockquote class="blockquote">
+<pre><code> XResBlocks (block, layers, expansion=1, p=0.0, c_in=1, n_out=1000,
+             stem_szs=(32, 32, 64), block_szs=None, widen=1.0, ndim=1,
+             ks=3, stride=2, sa=False, stem_stride=False, act_cls=&lt;class
+             'torch.nn.modules.activation.ReLU'&gt;, groups=1,
+             reduction=None, nh1=None, nh2=None, dw=False, g2=1,
+             sym=False, norm_type=&lt;NormType.Batch: 1&gt;, pool=&lt;function
+             AvgPool&gt;, pool_first=True, padding=None, bias=None,
+             bn_1st=True, transpose=False, init='auto', xtra=None,
+             bias_std=0.01, dilation:Union[int,Tuple[int,int]]=1,
+             padding_mode:str='zeros', device=None, dtype=None)</code></pre>
+</blockquote>
+<p>XResNet block.</p>
+<p><a href="https://BorjaRequena.github.io/step/source/models.html#xresblocks"><code>XResBlocks</code></a> follow the <a href="https://openaccess.thecvf.com/content_CVPR_2019/html/He_Bag_of_Tricks_for_Image_Classification_with_Convolutional_Neural_Networks_CVPR_2019_paper.html">XResNet architecture</a> to build a convolutional neural network feature extractor.</p>
+<p>The blocks start with an initial purely-convolutional stem. Then, every subsequent block consists of two convolutional layers with a skip connection or identity path. The identity paths have a single convolutional layer with kernel size 1 to match the channel dimension of their corresponding convolutional paths.</p>
+<hr>
+<p><a href="https://github.com/BorjaRequena/step/blob/main/step/models.py#L279" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="xresattn" class="level3">
+<h3 class="anchored" data-anchor-id="xresattn">XResAttn</h3>
+<blockquote class="blockquote">
+<pre><code> XResAttn (dim, n_class=5, conv_blocks=[1, 1], block=&lt;class
+           'fastai.layers.ResBlock'&gt;, block_szs=[64, 128], nhead_enc=1,
+           n_encoder_layers=6, dim_ff=2048, dropout=0.1, pos_enc=True,
+           linear_layers=[128], activation='relu', norm=True, yrange=(0,
+           2.05), expansion=1, p=0.0, c_in=1, n_out=1000, stem_szs=(32,
+           32, 64), widen=1.0, ndim=1, ks=3, stride=2, sa=False,
+           stem_stride=False, act_cls=&lt;class
+           'torch.nn.modules.activation.ReLU'&gt;, groups=1, reduction=None,
+           nh1=None, nh2=None, dw=False, g2=1, sym=False,
+           norm_type=&lt;NormType.Batch: 1&gt;, pool=&lt;function AvgPool&gt;,
+           pool_first=True, padding=None, bias=None, bn_1st=True,
+           transpose=False, init='auto', xtra=None, bias_std=0.01,
+           dilation:Union[int,Tuple[int,int]]=1, padding_mode:str='zeros',
+           device=None, dtype=None)</code></pre>
+</blockquote>
+<p>Xresnet blocks with attention at the end.</p>
+<table class="table">
+<thead>
+<tr class="header">
+<th></th>
+<th><strong>Type</strong></th>
+<th><strong>Default</strong></th>
+<th><strong>Details</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>dim</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<td>n_class</td>
+<td>int</td>
+<td>5</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>conv_blocks</td>
+<td>list</td>
+<td>[1, 1]</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>block</td>
+<td>PrePostInitMeta</td>
+<td>ResBlock</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>block_szs</td>
+<td>list</td>
+<td>[64, 128]</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>nhead_enc</td>
+<td>int</td>
+<td>1</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>n_encoder_layers</td>
+<td>int</td>
+<td>6</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>dim_ff</td>
+<td>int</td>
+<td>2048</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>dropout</td>
+<td>float</td>
+<td>0.1</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>pos_enc</td>
+<td>bool</td>
+<td>True</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>linear_layers</td>
+<td>list</td>
+<td>[128]</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>activation</td>
+<td>str</td>
+<td>relu</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>norm</td>
+<td>bool</td>
+<td>True</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>yrange</td>
+<td>tuple</td>
+<td>(0, 2.05)</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>expansion</td>
+<td>int</td>
+<td>1</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>p</td>
+<td>float</td>
+<td>0.0</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>c_in</td>
+<td>int</td>
+<td>1</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>n_out</td>
+<td>int</td>
+<td>1000</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>stem_szs</td>
+<td>tuple</td>
+<td>(32, 32, 64)</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>widen</td>
+<td>float</td>
+<td>1.0</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>ndim</td>
+<td>int</td>
+<td>1</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>ks</td>
+<td>int</td>
+<td>3</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>stride</td>
+<td>int</td>
+<td>2</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>sa</td>
+<td>bool</td>
+<td>False</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>stem_stride</td>
+<td>bool</td>
+<td>False</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>act_cls</td>
+<td>type</td>
+<td>ReLU</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>groups</td>
+<td>int</td>
+<td>1</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>reduction</td>
+<td>NoneType</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>nh1</td>
+<td>NoneType</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>nh2</td>
+<td>NoneType</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>dw</td>
+<td>bool</td>
+<td>False</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>g2</td>
+<td>int</td>
+<td>1</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>sym</td>
+<td>bool</td>
+<td>False</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>norm_type</td>
+<td>NormType</td>
+<td>NormType.Batch</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>pool</td>
+<td>function</td>
+<td>AvgPool</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>pool_first</td>
+<td>bool</td>
+<td>True</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>padding</td>
+<td>NoneType</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>bias</td>
+<td>NoneType</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>bn_1st</td>
+<td>bool</td>
+<td>True</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>transpose</td>
+<td>bool</td>
+<td>False</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>init</td>
+<td>str</td>
+<td>auto</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>xtra</td>
+<td>NoneType</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>bias_std</td>
+<td>float</td>
+<td>0.01</td>
+<td></td>
+</tr>
+<tr class="even">
+<td>dilation</td>
+<td>Union</td>
+<td>1</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>padding_mode</td>
+<td>str</td>
+<td>zeros</td>
+<td>TODO: refine this type</td>
+</tr>
+<tr class="even">
+<td>device</td>
+<td>NoneType</td>
+<td>None</td>
+<td></td>
+</tr>
+<tr class="odd">
+<td>dtype</td>
+<td>NoneType</td>
+<td>None</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><a href="https://BorjaRequena.github.io/step/source/models.html#xresattn"><code>XResAttn</code></a> is an evolution of <a href="https://BorjaRequena.github.io/step/source/models.html#convattn"><code>ConvAttn</code></a> in which we replace the basic convolutional layer by <a href="https://BorjaRequena.github.io/step/source/models.html#xresblocks"><code>XResBlocks</code></a>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>dim <span class="op">=</span> <span class="dv">2</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>dls <span class="op">=</span> get_segmentation_dls(dim<span class="op">=</span>dim, target<span class="op">=</span><span class="st">'y_exp'</span>, size<span class="op">=</span><span class="dv">10000</span>)</span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>dls.device <span class="op">=</span> default_device()</span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> XResAttn(dim, n_class<span class="op">=</span><span class="dv">1</span>, stem_szs<span class="op">=</span>(<span class="dv">32</span>,), conv_blocks<span class="op">=</span>[<span class="dv">1</span>, <span class="dv">1</span>], block_szs<span class="op">=</span>[<span class="dv">64</span>, <span class="dv">128</span>], </span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>                 n_encoder_layers<span class="op">=</span><span class="dv">6</span>, dim_ff<span class="op">=</span><span class="dv">512</span>, nhead_enc<span class="op">=</span><span class="dv">8</span>, linear_layers<span class="op">=</span>[])</span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>model.to(default_device())</span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a>learn <span class="op">=</span> Learner(dls, model, loss_func<span class="op">=</span>L1LossFlat(), model_dir<span class="op">=</span>MODEL_PATH)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>learn.fit_one_cycle(<span class="dv">15</span>, lr_max<span class="op">=</span><span class="fl">2e-4</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th">epoch</th>
+<th data-quarto-table-cell-role="th">train_loss</th>
+<th data-quarto-table-cell-role="th">valid_loss</th>
+<th data-quarto-table-cell-role="th">time</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>0</td>
+<td>0.351831</td>
+<td>0.341731</td>
+<td>05:52</td>
+</tr>
+<tr class="even">
+<td>1</td>
+<td>0.317376</td>
+<td>0.313373</td>
+<td>05:53</td>
+</tr>
+<tr class="odd">
+<td>2</td>
+<td>0.296154</td>
+<td>0.291456</td>
+<td>05:53</td>
+</tr>
+<tr class="even">
+<td>3</td>
+<td>0.276105</td>
+<td>0.274482</td>
+<td>05:53</td>
+</tr>
+<tr class="odd">
+<td>4</td>
+<td>0.265737</td>
+<td>0.263980</td>
+<td>05:53</td>
+</tr>
+<tr class="even">
+<td>5</td>
+<td>0.256997</td>
+<td>0.253854</td>
+<td>05:53</td>
+</tr>
+<tr class="odd">
+<td>6</td>
+<td>0.245702</td>
+<td>0.243755</td>
+<td>05:53</td>
+</tr>
+<tr class="even">
+<td>7</td>
+<td>0.243005</td>
+<td>0.237430</td>
+<td>05:53</td>
+</tr>
+<tr class="odd">
+<td>8</td>
+<td>0.235679</td>
+<td>0.235492</td>
+<td>05:53</td>
+</tr>
+<tr class="even">
+<td>9</td>
+<td>0.231861</td>
+<td>0.231436</td>
+<td>05:53</td>
+</tr>
+<tr class="odd">
+<td>10</td>
+<td>0.231640</td>
+<td>0.229545</td>
+<td>05:53</td>
+</tr>
+<tr class="even">
+<td>11</td>
+<td>0.225968</td>
+<td>0.227001</td>
+<td>05:53</td>
+</tr>
+<tr class="odd">
+<td>12</td>
+<td>0.223144</td>
+<td>0.226924</td>
+<td>05:54</td>
+</tr>
+<tr class="even">
+<td>13</td>
+<td>0.223188</td>
+<td>0.226133</td>
+<td>05:54</td>
+</tr>
+<tr class="odd">
+<td>14</td>
+<td>0.219965</td>
+<td>0.225446</td>
+<td>05:53</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<hr>
+<p><a href="https://github.com/BorjaRequena/step/blob/main/step/models.py#L310" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="logxresattn" class="level3">
+<h3 class="anchored" data-anchor-id="logxresattn">LogXResAttn</h3>
+<blockquote class="blockquote">
+<pre><code> LogXResAttn (dim, n_class=5, conv_blocks=[1, 1], block=&lt;class
+              'fastai.layers.ResBlock'&gt;, block_szs=[64, 128], nhead_enc=1,
+              n_encoder_layers=6, dim_ff=2048, dropout=0.1, pos_enc=True,
+              linear_layers=[128], activation='relu', norm=True,
+              yrange=(0, 2.05), **kwargs)</code></pre>
+</blockquote>
+<p>Xresnet blocks with attention at the end. t takes the logarithm of the displacements.</p>
+<p>The <code>LogXresAttn</code> model extracts the displacements of the input trajectory and works with their logarithm, rather than with the raw positional data. This allows it to seamlessly deal with trajectories that display diffusion coefficients across several orders of magnitude that could otherwise be lost in the numerical precision.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Since <code>LogXresAttn</code> works with the trajectory displacements, its output is a prediction for every displacement. While this is more physically meaningful, we need to take into account that the output dimension will be smaller (<span class="math inline">\(N-1\)</span> displacements for <span class="math inline">\(N\)</span> points).</p>
+</div>
+</div>
+</section>
+<section id="u-net" class="level2">
+<h2 class="anchored" data-anchor-id="u-net">U-net</h2>
+<p><a href="https://link.springer.com/chapter/10.1007/978-3-319-24574-4_28">U-nets</a> were originally conceived to perform image segmentation. Therefore, they are particularly well-suited for the trajectory segmentation task.</p>
+<p>We provide a dynamic U-net that takes the backbone of a model and transforms it into the U-like architecture.</p>
+<hr>
+<p><a href="https://github.com/BorjaRequena/step/blob/main/step/models.py#L339" target="_blank" style="float:right; font-size:smaller">source</a></p>
+<section id="icnr_init_general" class="level3">
+<h3 class="anchored" data-anchor-id="icnr_init_general">icnr_init_general</h3>
+<blockquote class="blockquote">
+<pre><code> icnr_init_general (x, scale=2, init=&lt;function kaiming_normal_&gt;)</code></pre>
+</blockquote>
+<p>Generalized version of <code>icnr_init</code>.</p>
+<hr>
+<p><a href="https://github.com/BorjaRequena/step/blob/main/step/models.py#L324" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="generalpixleshuffle" class="level3">
+<h3 class="anchored" data-anchor-id="generalpixleshuffle">GeneralPixleShuffle</h3>
+<blockquote class="blockquote">
+<pre><code> GeneralPixleShuffle (upscale_factor)</code></pre>
+</blockquote>
+<p>Generalized Pixle Shuffle to work with any data dimensionality.</p>
+<hr>
+<p><a href="https://github.com/BorjaRequena/step/blob/main/step/models.py#L349" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="pixelshuffleupsampling" class="level3">
+<h3 class="anchored" data-anchor-id="pixelshuffleupsampling">PixelShuffleUpsampling</h3>
+<blockquote class="blockquote">
+<pre><code> PixelShuffleUpsampling (ni, nf=None, scale=2, ndim=2, blur=False,
+                         norm_type=&lt;NormType.Weight: 3&gt;, act_cls=&lt;class
+                         'torch.nn.modules.activation.ReLU'&gt;)</code></pre>
+</blockquote>
+<p>Updample by <code>scale</code> from <code>ni</code> filters to <code>nf</code> using <a href="https://BorjaRequena.github.io/step/source/models.html#generalpixleshuffle"><code>GeneralPixleShuffle</code></a>.</p>
+<hr>
+<p><a href="https://github.com/BorjaRequena/step/blob/main/step/models.py#L366" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="unetblock" class="level3">
+<h3 class="anchored" data-anchor-id="unetblock">UnetBlock</h3>
+<blockquote class="blockquote">
+<pre><code> UnetBlock (up_in_c, x_in_c, hook, ndim=1, final_div=True, blur=False,
+            act_cls=&lt;class 'torch.nn.modules.activation.ReLU'&gt;,
+            self_attention=False, init=&lt;function kaiming_normal_&gt;,
+            norm_type=None, ks=3, stride=1, padding=None, bias=None,
+            bn_1st=True, transpose=False, xtra=None, bias_std=0.01,
+            dilation:Union[int,Tuple[int,int]]=1, groups:int=1,
+            padding_mode:str='zeros', device=None, dtype=None)</code></pre>
+</blockquote>
+<p>A quasi-UNet block using pixel shuffle upsampling.</p>
+<p>A key element of the U-net is the upsmapling branch. We do it by stacking <a href="https://BorjaRequena.github.io/step/source/models.html#unetblock"><code>UnetBlock</code></a>s that perform convolution-based upsampling with pixel shuffle. We implement a <a href="https://BorjaRequena.github.io/step/source/models.html#pixelshuffleupsampling"><code>PixelShuffleUpsampling</code></a> layer that uses our <a href="https://BorjaRequena.github.io/step/source/models.html#generalpixleshuffle"><code>GeneralPixleShuffle</code></a>, which is a generalized version of the <a href="https://www.cv-foundation.org/openaccess/content_cvpr_2016/html/Shi_Real-Time_Single_Image_CVPR_2016_paper.html">original pixel shuffle</a>.</p>
+<p>To build the downsampling branch, we take the desired architecture and we pass a dummy input through it to extract relevant information, such as the points at which dimensions change, which then need to be connected to the upsampling branch.</p>
+<hr>
+<p><a href="https://github.com/BorjaRequena/step/blob/main/step/models.py#L416" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="dummy_eval" class="level3">
+<h3 class="anchored" data-anchor-id="dummy_eval">dummy_eval</h3>
+<blockquote class="blockquote">
+<pre><code> dummy_eval (m, size=(64, 64))</code></pre>
+</blockquote>
+<p>Evaluate <code>m</code> on a dummy input of a certain <code>size</code></p>
+<hr>
+<p><a href="https://github.com/BorjaRequena/step/blob/main/step/models.py#L409" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="in_channels" class="level3">
+<h3 class="anchored" data-anchor-id="in_channels">in_channels</h3>
+<blockquote class="blockquote">
+<pre><code> in_channels (m)</code></pre>
+</blockquote>
+<p>Return the shape of the first weight layer in <code>m</code>.</p>
+<hr>
+<p><a href="https://github.com/BorjaRequena/step/blob/main/step/models.py#L403" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="model_sizes" class="level3">
+<h3 class="anchored" data-anchor-id="model_sizes">model_sizes</h3>
+<blockquote class="blockquote">
+<pre><code> model_sizes (m, size=(64, 64))</code></pre>
+</blockquote>
+<p>Pass a dummy input through the model <code>m</code> to get the various sizes of activations.</p>
+<hr>
+<p><a href="https://github.com/BorjaRequena/step/blob/main/step/models.py#L397" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="get_sz_change_idxs" class="level3">
+<h3 class="anchored" data-anchor-id="get_sz_change_idxs">get_sz_change_idxs</h3>
+<blockquote class="blockquote">
+<pre><code> get_sz_change_idxs (sizes)</code></pre>
+</blockquote>
+<p>Get the indexes of the layers where the size of the activation changes.</p>
+<hr>
+<p><a href="https://github.com/BorjaRequena/step/blob/main/step/models.py#L423" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="resizetoorig" class="level3">
+<h3 class="anchored" data-anchor-id="resizetoorig">ResizeToOrig</h3>
+<blockquote class="blockquote">
+<pre><code> ResizeToOrig (mode='nearest')</code></pre>
+</blockquote>
+<p>Merge a shortcut with the module result by adding or concatenating them if <code>dense=True</code>.</p>
+<hr>
+<p><a href="https://github.com/BorjaRequena/step/blob/main/step/models.py#L433" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="attndynamicunet" class="level3">
+<h3 class="anchored" data-anchor-id="attndynamicunet">AttnDynamicUnet</h3>
+<blockquote class="blockquote">
+<pre><code> AttnDynamicUnet (encoder, n_out, img_size, ndim=1, num_encoder_layers=6,
+                  nhead_enc=8, dim_ff=1024, p=0.1, act='relu', blur=False,
+                  blur_final=True, self_attention=False, y_range=None,
+                  last_cross=True, bottle=False, act_cls=&lt;class
+                  'torch.nn.modules.activation.ReLU'&gt;, init=&lt;function
+                  kaiming_normal_&gt;, norm_type=None, **kwargs)</code></pre>
+</blockquote>
+<p>Create a U-Net from a given architecture.</p>
+<p><a href="https://BorjaRequena.github.io/step/source/models.html#attndynamicunet"><code>AttnDynamicUnet</code></a> builds a U-net like architecture from a given architecture (<code>encoder</code>). The input encoder conforms the downsampling branch, then, we add a convolution and a transformer encoder at the center (bottom of the U), and build the upsampling branch with <a href="https://BorjaRequena.github.io/step/source/models.html#unetblock"><code>UnetBlock</code></a>s that have skip connections wherever the dimension in the encoder changes.</p>
+<hr>
+<p><a href="https://github.com/BorjaRequena/step/blob/main/step/models.py#L490" target="_blank" style="float:right; font-size:smaller">source</a></p>
+</section>
+<section id="unetmodel" class="level3">
+<h3 class="anchored" data-anchor-id="unetmodel">UnetModel</h3>
+<blockquote class="blockquote">
+<pre><code> UnetModel (encoder, n_class, img_size, nf=64, linear_layers=[128], p=0.1,
+            y_range=(0, 2.05), ndim=1, num_encoder_layers=6, nhead_enc=8,
+            dim_ff=1024, act='relu', blur=False, blur_final=True,
+            self_attention=False, last_cross=True, bottle=False,
+            act_cls=&lt;class 'torch.nn.modules.activation.ReLU'&gt;,
+            init=&lt;function kaiming_normal_&gt;, norm_type=None)</code></pre>
+</blockquote>
+<p>U-net with a final dense layer.</p>
+<p><a href="https://BorjaRequena.github.io/step/source/models.html#unetmodel"><code>UnetModel</code></a> uses <a href="https://BorjaRequena.github.io/step/source/models.html#attndynamicunet"><code>AttnDynamicUnet</code></a> to build a U-net from a desired architecture and appends a <a href="https://BorjaRequena.github.io/step/source/models.html#classifier"><code>Classifier</code></a> at the end to obtain the desired output dimension for the task.</p>
+<p>For example, we can easily build a U-net with an XResNet encoder to infer the anomalous diffusion exponent <span class="math inline">\(\alpha\)</span> at every time step of the input trajectories.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>dls <span class="op">=</span> get_segmentation_dls(target<span class="op">=</span><span class="st">'y_exp'</span>)</span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a>dls.device <span class="op">=</span> default_device()</span>
+<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a>encoder <span class="op">=</span> XResBlocks(ResBlock, [<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">1</span>], c_in<span class="op">=</span><span class="dv">1</span>, stem_szs<span class="op">=</span>(<span class="dv">32</span>,), block_szs<span class="op">=</span>[<span class="dv">64</span>, <span class="dv">128</span>, <span class="dv">256</span>])</span>
+<span id="cb41-4"><a href="#cb41-4" aria-hidden="true" tabindex="-1"></a>umodel <span class="op">=</span> UnetModel(encoder, <span class="dv">1</span>, (<span class="dv">200</span>,), num_encoder_layers<span class="op">=</span><span class="dv">4</span>, dim_ff<span class="op">=</span><span class="dv">512</span>, linear_layers<span class="op">=</span>[], y_range<span class="op">=</span>(<span class="dv">0</span>, <span class="fl">2.05</span>))</span>
+<span id="cb41-5"><a href="#cb41-5" aria-hidden="true" tabindex="-1"></a>umodel.to(default_device())</span>
+<span id="cb41-6"><a href="#cb41-6" aria-hidden="true" tabindex="-1"></a>ulearn <span class="op">=</span> Learner(dls, umodel, loss_func<span class="op">=</span>L1LossFlat(), model_dir<span class="op">=</span>MODEL_PATH)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>ulearn.fit_one_cycle(<span class="dv">15</span>, lr_max<span class="op">=</span><span class="fl">1e-3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<table class="dataframe table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th">epoch</th>
+<th data-quarto-table-cell-role="th">train_loss</th>
+<th data-quarto-table-cell-role="th">valid_loss</th>
+<th data-quarto-table-cell-role="th">time</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>0</td>
+<td>0.353012</td>
+<td>0.344957</td>
+<td>00:35</td>
+</tr>
+<tr class="even">
+<td>1</td>
+<td>0.335089</td>
+<td>0.334739</td>
+<td>00:35</td>
+</tr>
+<tr class="odd">
+<td>2</td>
+<td>0.332037</td>
+<td>0.327504</td>
+<td>00:35</td>
+</tr>
+<tr class="even">
+<td>3</td>
+<td>0.324102</td>
+<td>0.323693</td>
+<td>00:36</td>
+</tr>
+<tr class="odd">
+<td>4</td>
+<td>0.317840</td>
+<td>0.316003</td>
+<td>00:36</td>
+</tr>
+<tr class="even">
+<td>5</td>
+<td>0.312131</td>
+<td>0.314038</td>
+<td>00:36</td>
+</tr>
+<tr class="odd">
+<td>6</td>
+<td>0.309137</td>
+<td>0.310193</td>
+<td>00:35</td>
+</tr>
+<tr class="even">
+<td>7</td>
+<td>0.308097</td>
+<td>0.305047</td>
+<td>00:35</td>
+</tr>
+<tr class="odd">
+<td>8</td>
+<td>0.303723</td>
+<td>0.304123</td>
+<td>00:36</td>
+</tr>
+<tr class="even">
+<td>9</td>
+<td>0.299942</td>
+<td>0.302303</td>
+<td>00:36</td>
+</tr>
+<tr class="odd">
+<td>10</td>
+<td>0.299658</td>
+<td>0.300621</td>
+<td>00:36</td>
+</tr>
+<tr class="even">
+<td>11</td>
+<td>0.297696</td>
+<td>0.300281</td>
+<td>00:36</td>
+</tr>
+<tr class="odd">
+<td>12</td>
+<td>0.293374</td>
+<td>0.299450</td>
+<td>00:36</td>
+</tr>
+<tr class="even">
+<td>13</td>
+<td>0.292193</td>
+<td>0.299131</td>
+<td>00:36</td>
+</tr>
+<tr class="odd">
+<td>14</td>
+<td>0.290734</td>
+<td>0.299084</td>
+<td>00:36</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+
+
+</section>
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

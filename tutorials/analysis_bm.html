@@ -1,0 +1,1394 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.450">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="description" content="We benchmark STEP studying Brownian motion trajectories with changes.">
+
+<title>STEP - Benchmark: Brownian motion</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+<script src="https://unpkg.com/@jupyter-widgets/html-manager@*/dist/embed-amd.js" crossorigin="anonymous"></script>
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<link rel="stylesheet" href="../styles.css">
+<meta property="og:title" content="STEP - Benchmark: Brownian motion">
+<meta property="og:description" content="We benchmark STEP studying Brownian motion trajectories with changes.">
+<meta property="og:image" content="https://BorjaRequena.github.io/step/tutorials/01_analysis_bm_files/figure-html/cell-13-output-1.png">
+<meta property="og:site-name" content="STEP">
+<meta property="og:image:height" content="394">
+<meta property="og:image:width" content="466">
+<meta name="twitter:title" content="STEP - Benchmark: Brownian motion">
+<meta name="twitter:description" content="We benchmark STEP studying Brownian motion trajectories with changes.">
+<meta name="twitter:image" content="https://BorjaRequena.github.io/step/tutorials/01_analysis_bm_files/figure-html/cell-13-output-1.png">
+<meta name="twitter:image-height" content="394">
+<meta name="twitter:image-width" content="466">
+<meta name="twitter:card" content="summary_large_image">
+</head>
+
+<body class="nav-sidebar floating nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a href="../index.html" class="navbar-brand navbar-brand-logo">
+    <img src="../logo.png" alt="" class="navbar-logo">
+    </a>
+    <a class="navbar-brand" href="../index.html">
+    <span class="navbar-title">STEP</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/BorjaRequena/step" rel="" target=""><i class="bi bi-github" role="img">
+</i> 
+ <span class="menu-text"></span></a>
+  </li>  
+</ul>
+            <div class="quarto-navbar-tools">
+</div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../tutorials/index_tutorials.html">Tutorials</a></li><li class="breadcrumb-item"><a href="../tutorials/analysis_bm.html">Benchmark: Brownian motion</a></li></ol></nav>
+      <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+      </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal sidebar-navigation floating overflow-auto">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Getting started</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="false">
+ <span class="menu-text">Documentation</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" aria-expanded="false" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../source/data.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Data</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../source/models.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Models</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../source/baselines.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Baselines</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../source/utils.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Utils</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="../tutorials/index_tutorials.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Tutorials</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tutorials/model_training.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Model training</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tutorials/analysis_bm.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Benchmark: Brownian motion</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tutorials/analysis_andi.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Benchmark: anomalous diffusion</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../tutorials/anomalous_from_normal.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Anomalous diffusion from normal diffusion</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#load-the-model" id="toc-load-the-model" class="nav-link active" data-scroll-target="#load-the-model">Load the model</a></li>
+  <li><a href="#pointwise-prediction" id="toc-pointwise-prediction" class="nav-link" data-scroll-target="#pointwise-prediction">Pointwise prediction</a>
+  <ul class="collapse">
+  <li><a href="#generate-the-data" id="toc-generate-the-data" class="nav-link" data-scroll-target="#generate-the-data">Generate the data</a></li>
+  <li><a href="#get-the-predictions" id="toc-get-the-predictions" class="nav-link" data-scroll-target="#get-the-predictions">Get the predictions</a></li>
+  <li><a href="#overall-performance" id="toc-overall-performance" class="nav-link" data-scroll-target="#overall-performance">Overall performance</a></li>
+  <li><a href="#prediction-error" id="toc-prediction-error" class="nav-link" data-scroll-target="#prediction-error">Prediction error</a></li>
+  </ul></li>
+  <li><a href="#changepoint-detection" id="toc-changepoint-detection" class="nav-link" data-scroll-target="#changepoint-detection">Changepoint detection</a>
+  <ul class="collapse">
+  <li><a href="#generate-the-data-1" id="toc-generate-the-data-1" class="nav-link" data-scroll-target="#generate-the-data-1">Generate the data</a></li>
+  <li><a href="#get-the-predictions-1" id="toc-get-the-predictions-1" class="nav-link" data-scroll-target="#get-the-predictions-1">Get the predictions</a></li>
+  <li><a href="#overall-performance-1" id="toc-overall-performance-1" class="nav-link" data-scroll-target="#overall-performance-1">Overall performance</a></li>
+  <li><a href="#difference-between-consecutive-segments" id="toc-difference-between-consecutive-segments" class="nav-link" data-scroll-target="#difference-between-consecutive-segments">Difference between consecutive segments</a></li>
+  <li><a href="#changepoint-position" id="toc-changepoint-position" class="nav-link" data-scroll-target="#changepoint-position">Changepoint position</a></li>
+  </ul></li>
+  <li><a href="#effect-of-the-number-of-segments" id="toc-effect-of-the-number-of-segments" class="nav-link" data-scroll-target="#effect-of-the-number-of-segments">Effect of the number of segments</a>
+  <ul class="collapse">
+  <li><a href="#generate-the-data-2" id="toc-generate-the-data-2" class="nav-link" data-scroll-target="#generate-the-data-2">Generate the data</a></li>
+  <li><a href="#get-the-predictions-2" id="toc-get-the-predictions-2" class="nav-link" data-scroll-target="#get-the-predictions-2">Get the predictions</a></li>
+  <li><a href="#pointwise-error" id="toc-pointwise-error" class="nav-link" data-scroll-target="#pointwise-error">Pointwise error</a></li>
+  <li><a href="#changepoint-detection-1" id="toc-changepoint-detection-1" class="nav-link" data-scroll-target="#changepoint-detection-1">Changepoint detection</a></li>
+  </ul></li>
+  <li><a href="#resilience-to-noise" id="toc-resilience-to-noise" class="nav-link" data-scroll-target="#resilience-to-noise">Resilience to noise</a>
+  <ul class="collapse">
+  <li><a href="#optional-load-the-data" id="toc-optional-load-the-data" class="nav-link" data-scroll-target="#optional-load-the-data">(Optional) Load the data</a></li>
+  <li><a href="#get-the-predictions-3" id="toc-get-the-predictions-3" class="nav-link" data-scroll-target="#get-the-predictions-3">Get the predictions</a></li>
+  </ul></li>
+  </ul>
+<div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/BorjaRequena/step/issues/new" class="toc-action">Report an issue</a></p></div></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Benchmark: Brownian motion</h1>
+</div>
+
+<div>
+  <div class="description">
+    We benchmark STEP studying Brownian motion trajectories with changes.
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<!-- WARNING: THIS FILE WAS AUTOGENERATED! DO NOT EDIT! -->
+<p>The main goal is to characterize heterogeneous diffusion processes without any kind of prior konwledge. To do so, we predict the diffusion coefficient at every time step, which naturally highlights potential changes in the behaviour along the trajectories. This allows us to obtain a deeper understanding of the underlying physical systems that drive the dynamics.</p>
+<p>In the following analysis, we provide a thorough characterization of the model performance under various conditions and we show how to reproduce some figures of <a href="https://arxiv.org/abs/2302.00410">our paper</a>.</p>
+<section id="load-the-model" class="level1">
+<h1>Load the model</h1>
+<p>First of all, we need to load a trained model with which to perform the analysis.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>We refer to the <a href="https://borjarequena.github.io/step/tutorials/model_training.html">model training tutorial</a> for details about how to train and save your models.</p>
+</div>
+</div>
+<p>To load the models within a <code>Leaner</code>, we need to provide some data loaders. However, we will use the model to study various scenarios, so we provide an empty dataloader and load the different data sets as we need them.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>dim <span class="op">=</span> <span class="dv">2</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>dls <span class="op">=</span> DataLoaders.from_dsets([], []) <span class="co"># Empty train and validation datasets</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> XResAttn(dim, n_class<span class="op">=</span><span class="dv">1</span>, stem_szs<span class="op">=</span>(<span class="dv">64</span>,), conv_blocks<span class="op">=</span>[<span class="dv">1</span>, <span class="dv">1</span>, <span class="dv">1</span>],</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>                 block_szs<span class="op">=</span>[<span class="dv">128</span>, <span class="dv">256</span>, <span class="dv">512</span>], pos_enc<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>                 n_encoder_layers<span class="op">=</span><span class="dv">4</span>, dim_ff<span class="op">=</span><span class="dv">512</span>, nhead_enc<span class="op">=</span><span class="dv">8</span>,</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>                 linear_layers<span class="op">=</span>[], norm<span class="op">=</span><span class="va">False</span>, yrange<span class="op">=</span>(<span class="op">-</span><span class="fl">3.1</span>, <span class="fl">3.1</span>))</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>model.to(default_device())</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>learn_diff <span class="op">=</span> Learner(dls, model, loss_func<span class="op">=</span>L1LossFlat(), model_dir<span class="op">=</span>MODEL_PATH)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Now we can load the trained model weights.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>learn_diff.load(<span class="ss">f'xresattn_bm_</span><span class="sc">{</span>dim<span class="sc">}</span><span class="ss">d_1_to_4cp'</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>learn_diff.model.<span class="bu">eval</span>()<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Warning
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>It is very important to define the model exactly with the same layers as we did during training. Otherwise, we won’t be able to load the trained parameters!</p>
+</div>
+</div>
+</section>
+<section id="pointwise-prediction" class="level1">
+<h1>Pointwise prediction</h1>
+<p>We study the overall performance of the method over heterogeneous Brownian motion trajectories. We look at the pointwise prediction error and study how the length of the segments within the trajectory affect it.</p>
+<p>We compare our approach with a reference method based on the time-averaged mean squared displacement (TA-MSD) (see <a href="https://borjarequena.github.io/step/source/baselines.html">baselines</a>). However, since this method cannot account for any heterogeneity in the trajectories, we provide it with the pre-segmented trajectories. This results in a massive advantage and, thus, we also pass the pre-cut segments through our model.</p>
+<p>With this segment-wise analysis, we can easily study the performance of all the methods as function of the segment lengths.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>We consider diffusion coefficients over six orders of magnitude <span class="math inline">\(D\in[10^{-3},10^3]\)</span>. Some times, our observations may fall outside of this range and our predictions saturate to one of the interval limits. In these cases, we can rescale the trajectories to fit within the predicted range, as we do in the experimental data analysis tutorials.</p>
+</div>
+</div>
+<section id="generate-the-data" class="level2">
+<h2 class="anchored" data-anchor-id="generate-the-data">Generate the data</h2>
+<p>To evaluate the different methods, we need a proper test set. We can generate one in the same way that we genereate the train set in the <a href="https://borjarequena.github.io/step/tutorials/model_training.html">model training tutorial</a>.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Skip the data generation if you already have a test set!</p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># OPTIONAL: create the test set.</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Don't need to run this cell if it already exists.</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>n_per_set, max_t, dim <span class="op">=</span> <span class="dv">12000</span>, <span class="dv">200</span>, <span class="dv">2</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>Ds <span class="op">=</span> np.logspace(<span class="op">-</span><span class="dv">3</span>, <span class="dv">3</span>, <span class="dv">1000</span>) </span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>cps <span class="op">=</span> [<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">4</span>]</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>ds_fun <span class="op">=</span> partial(create_bm_segmentation_dataset,</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>                 max_t<span class="op">=</span>max_t, dim<span class="op">=</span>dim, Ds<span class="op">=</span>Ds, save<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>datasets <span class="op">=</span> [ds_fun(n_per_set, n_change_points<span class="op">=</span>n_cp) <span class="cf">for</span> n_cp <span class="kw">in</span> cps]</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>ds <span class="op">=</span> combine_datasets(datasets)</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>n_change <span class="op">=</span> <span class="ss">f"</span><span class="sc">{</span><span class="bu">min</span>(cps)<span class="sc">}</span><span class="ss">_to_</span><span class="sc">{</span><span class="bu">max</span>(cps)<span class="sc">}</span><span class="ss">"</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>save_path <span class="op">=</span> DATA_PATH<span class="op">/</span>get_bmds_fname(n_change, max_t, dim, <span class="st">'test'</span>)</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>ds.to_pickle(save_path)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Load the test set.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Skip this cell if you just generated it.</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>n_change <span class="op">=</span> <span class="st">"1_to_4"</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>name <span class="op">=</span> <span class="st">"test"</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>ds <span class="op">=</span> load_dataset(n_change<span class="op">=</span>n_change, dim<span class="op">=</span>dim, bm<span class="op">=</span><span class="va">True</span>, name<span class="op">=</span>name)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>We also load the data as data loaders with <code>split_pct=1</code> (all data for validation). This allows us to loop over batches much more easily setting <code>shuffle=False</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>bs <span class="op">=</span> <span class="dv">200</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>dls <span class="op">=</span> get_segmentation_dls(target<span class="op">=</span><span class="st">'y_exp'</span>, dim<span class="op">=</span>dim, n_change<span class="op">=</span>n_change,</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>                           name<span class="op">=</span>name, tfm_y<span class="op">=</span>torch.log10, bm<span class="op">=</span><span class="va">True</span>, bs<span class="op">=</span>bs,</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>                           shuffle<span class="op">=</span><span class="va">False</span>, split_pct<span class="op">=</span><span class="fl">1.</span>)</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>dls.device <span class="op">=</span> default_device()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="get-the-predictions" class="level2">
+<h2 class="anchored" data-anchor-id="get-the-predictions">Get the predictions</h2>
+<p>We now perform the predictions of the trajectories as a whole and store them in the dataframe to process them later.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i, (x, y) <span class="kw">in</span> tqdm(<span class="bu">enumerate</span>(dls.valid)):</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    pred <span class="op">=</span> to_detach(learn_diff.model(x).squeeze())</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    mae <span class="op">=</span> to_detach((learn_diff.model(x).squeeze()<span class="op">-</span>y).<span class="bu">abs</span>().mean(<span class="op">-</span><span class="dv">1</span>))</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    l_pred <span class="op">=</span> np.array([p <span class="cf">for</span> p <span class="kw">in</span> pred], dtype<span class="op">=</span><span class="bu">object</span>)</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    ds.loc[i<span class="op">*</span>bs:(i<span class="op">+</span><span class="dv">1</span>)<span class="op">*</span>bs<span class="op">-</span><span class="dv">1</span>, <span class="st">'mae'</span>] <span class="op">=</span> mae.numpy()</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>    ds.loc[i<span class="op">*</span>bs:(i<span class="op">+</span><span class="dv">1</span>)<span class="op">*</span>bs<span class="op">-</span><span class="dv">1</span>, <span class="st">'pred'</span>] <span class="op">=</span> l_pred</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"dc1fe43a5d4e45498f7271f4cb315e3a","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+</div>
+<p>With the full-trajectory predictions, we can proceed to perform the segment-wise analysis. We split the trajectories and their predictions by the <em>true</em> changepoints. Then, we perform the prediction especifically for each segment with both the model and the TA-MSD method. We choose the TA-MSD 1-2 to perform the evaluation, which is optimal for Brownian motion.</p>
+<p>Let’s define a prediction function to simplify the code.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> predict_sample(model, x):</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    xb <span class="op">=</span> x.unsqueeze(<span class="dv">0</span>).to(default_device())</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> to_detach(model(xb).squeeze())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Now we can proceed to process the trajectories. The following piece of code is rather chonky so let us give a brief overview. For every trajectory (outer loop), we process each of its segments (inner loop). For every segment, we compute the mean absolute error (MAE) and the mean relative error with the three aforementioned approaches.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>segment_data <span class="op">=</span> []</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i, row <span class="kw">in</span> tqdm(ds.iterrows()):</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    x, y,<span class="op">=</span> row.x, torch.log10(row.y_exp.squeeze())</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    pred, cps <span class="op">=</span> row.pred, row.cp</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>    split_x <span class="op">=</span> split_tensor(x.T, cps)</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>    split_y, split_pred <span class="op">=</span> split_tensor(y, cps), split_tensor(pred, cps)</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>    splits <span class="op">=</span> <span class="bu">zip</span>(split_x, split_y, split_pred)</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> j, (seg_x, seg_y, pred_cut) <span class="kw">in</span> <span class="bu">enumerate</span>(splits):</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Prediction over full trajectory cut with true changepoints</span></span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>        mae <span class="op">=</span> mean_absolute_error(pred_cut, seg_y)</span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>        rel_err <span class="op">=</span> mean_relative_error(pred_cut, seg_y)</span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Prediction over segment</span></span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>        pred_segment <span class="op">=</span> predict_sample(learn_diff.model, seg_x <span class="op">-</span> seg_x[<span class="dv">0</span>])</span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>        mae_segment <span class="op">=</span> mean_absolute_error(pred_segment, seg_y)</span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>        rel_err_segment <span class="op">=</span> mean_relative_error(pred_segment, seg_y)</span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Prediction over segment with TA-MSD</span></span>
+<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a>        pred_tamsd <span class="op">=</span> diffusion_coefficient_tamsd(seg_x)</span>
+<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a>        mae_tamsd <span class="op">=</span> mean_absolute_error(pred_tamsd, <span class="dv">10</span><span class="op">**</span>seg_y[<span class="dv">0</span>])</span>
+<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a>        rel_err_tamsd <span class="op">=</span> (pred_tamsd<span class="op">*</span><span class="dv">10</span><span class="op">**</span>(<span class="op">-</span>seg_y[<span class="dv">0</span>]) <span class="op">-</span> <span class="dv">1</span>).<span class="bu">abs</span>()</span>
+<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a>        <span class="co"># Save the segment metrics</span></span>
+<span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a>        segment_data.append({<span class="st">'sample'</span>: i, <span class="st">'segment_idx'</span>: j,</span>
+<span id="cb8-27"><a href="#cb8-27" aria-hidden="true" tabindex="-1"></a>                             <span class="st">'length'</span>: <span class="bu">len</span>(seg_y), <span class="st">'x'</span>: seg_x, <span class="st">'y'</span>: seg_y,</span>
+<span id="cb8-28"><a href="#cb8-28" aria-hidden="true" tabindex="-1"></a>                             <span class="st">'pred_cut'</span>: pred_cut,</span>
+<span id="cb8-29"><a href="#cb8-29" aria-hidden="true" tabindex="-1"></a>                             <span class="st">'pred_segment'</span>: pred_segment,</span>
+<span id="cb8-30"><a href="#cb8-30" aria-hidden="true" tabindex="-1"></a>                             <span class="st">'pred_tamsd'</span>: pred_tamsd, <span class="st">'mae'</span>: mae,</span>
+<span id="cb8-31"><a href="#cb8-31" aria-hidden="true" tabindex="-1"></a>                             <span class="st">'rel_err'</span>: rel_err, <span class="st">'mae_segment'</span>: mae_segment,</span>
+<span id="cb8-32"><a href="#cb8-32" aria-hidden="true" tabindex="-1"></a>                             <span class="st">'rel_err_segment'</span>: rel_err_segment,</span>
+<span id="cb8-33"><a href="#cb8-33" aria-hidden="true" tabindex="-1"></a>                             <span class="st">'mae_tamsd'</span>: mae_tamsd,</span>
+<span id="cb8-34"><a href="#cb8-34" aria-hidden="true" tabindex="-1"></a>                             <span class="st">'rel_err_tamsd'</span>: rel_err_tamsd})</span>
+<span id="cb8-35"><a href="#cb8-35" aria-hidden="true" tabindex="-1"></a>segment_ds <span class="op">=</span> pd.DataFrame.from_records(segment_data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"24b1146bc980410681d154a55d686a04","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+</div>
+<p>Finally, we save all the data for its posterior post-processing. It is extremely heavy and slow :D</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>segment_ds.to_pickle(DATA_PATH<span class="op">/</span><span class="st">"segment_analysis_test.pkl"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="overall-performance" class="level2">
+<h2 class="anchored" data-anchor-id="overall-performance">Overall performance</h2>
+<p>To obtain an intuition of our model’s performance, we can do a qualitative analysis by looking at the predicted diffusion coefficient <span class="math inline">\(D_{\text{pred}}\)</span> as function of the ground truth <span class="math inline">\(D_{\text{true}}\)</span> at every time step.</p>
+<p>To do so, we simply concatenate the predictions for every segment <code>segment_ds.pred_cut</code> and their true labels <code>segment_ds.y</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>true <span class="op">=</span> np.concatenate([<span class="op">*</span>segment_ds.y])</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>pred <span class="op">=</span> np.concatenate([<span class="op">*</span>segment_ds.pred_cut])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Now we can build the 2D histogram.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>bins <span class="op">=</span> [np.linspace(<span class="op">-</span><span class="dv">3</span>, <span class="dv">3</span>, <span class="dv">61</span>), np.linspace(<span class="op">-</span><span class="fl">3.1</span>, <span class="fl">3.1</span>, <span class="dv">63</span>)]</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>hist, true_edges, pred_edges <span class="op">=</span> np.histogram2d(true, pred, bins<span class="op">=</span>bins)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>fig <span class="op">=</span> plt.figure(figsize<span class="op">=</span>(<span class="fl">1.1</span><span class="op">*</span>fig_size, fig_size))</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>plt.pcolor(hist.transpose()<span class="op">/</span>hist.<span class="bu">max</span>(), cmap<span class="op">=</span>cmap_hist1, vmax<span class="op">=</span><span class="fl">0.8</span>, rasterized<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>xtick_pos <span class="op">=</span> np.linspace(<span class="dv">0</span>, <span class="bu">len</span>(true_edges) <span class="op">-</span> <span class="dv">1</span>, np.ceil(<span class="bu">len</span>(true_edges)<span class="op">/</span><span class="dv">30</span>).astype(<span class="bu">int</span>))</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>xtick_labels <span class="op">=</span> [<span class="vs">fr'$10^</span><span class="ch">{{</span><span class="sc">{</span>i<span class="sc">:.0f}</span><span class="ch">}}</span><span class="vs">$'</span> <span class="cf">for</span> i <span class="kw">in</span> true_edges[::<span class="dv">30</span>]]</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>ytick_pos <span class="op">=</span> np.linspace(<span class="dv">0</span>, <span class="bu">len</span>(pred_edges) <span class="op">-</span> <span class="dv">3</span>, np.ceil(<span class="bu">len</span>(pred_edges)<span class="op">/</span><span class="dv">30</span>).astype(<span class="bu">int</span>)) <span class="op">+</span> <span class="dv">1</span></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>ytick_labels <span class="op">=</span> [<span class="vs">fr'$10^</span><span class="ch">{{</span><span class="sc">{</span>i<span class="sc">:.0f}</span><span class="ch">}}</span><span class="vs">$'</span> <span class="cf">for</span> i <span class="kw">in</span> pred_edges[<span class="dv">1</span>::<span class="dv">30</span>]]</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>plt.yticks(ytick_pos, labels<span class="op">=</span>ytick_labels)</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="vs">r'$D_</span><span class="sc">{pred}</span><span class="vs">$'</span>, fontsize<span class="op">=</span><span class="dv">16</span>)</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>plt.xticks(xtick_pos, xtick_labels)</span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="vs">r'$D_</span><span class="sc">{true}</span><span class="vs">$'</span>, fontsize<span class="op">=</span><span class="dv">16</span>)</span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>plt.tick_params(labelsize<span class="op">=</span><span class="dv">14</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<p><img src="01_analysis_bm_files/figure-html/cell-13-output-1.png" class="img-fluid"></p>
+</div>
+</div>
+<p>The histogram shape is close to a perfect regressor, where we would obtain a straight diagonal line. Therefore, the model seems to be working pretty nicely!</p>
+</section>
+<section id="prediction-error" class="level2">
+<h2 class="anchored" data-anchor-id="prediction-error">Prediction error</h2>
+<p>To obtain a quantitative analysis, we can look at the relative error of the different methods.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>lengths <span class="op">=</span> segment_ds.length.unique().astype(<span class="bu">int</span>)</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>lengths.sort()</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>metrics <span class="op">=</span> [<span class="st">'err'</span>, <span class="st">'err_segment'</span>, <span class="st">'err_tamsd'</span>]</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>metric_by_length <span class="op">=</span> {m: {<span class="st">'mean'</span>: [], <span class="st">'sem'</span>: [], <span class="st">'global'</span>: <span class="va">None</span>}</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>                    <span class="cf">for</span> m <span class="kw">in</span> metrics}</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> m <span class="kw">in</span> metrics:</span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>    means <span class="op">=</span> [<span class="bu">getattr</span>(segment_ds, <span class="ss">f"rel_</span><span class="sc">{</span>m<span class="sc">}</span><span class="ss">"</span>)[segment_ds.length <span class="op">==</span> l].mean()</span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>             <span class="cf">for</span> l <span class="kw">in</span> lengths]</span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>    sems <span class="op">=</span> [<span class="bu">getattr</span>(segment_ds, <span class="ss">f"rel_</span><span class="sc">{</span>m<span class="sc">}</span><span class="ss">"</span>)[segment_ds.length <span class="op">==</span> l].sem()</span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>            <span class="cf">for</span> l <span class="kw">in</span> lengths]</span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>    metric_by_length[m][<span class="st">'mean'</span>] <span class="op">=</span> np.array(means)</span>
+<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a>    metric_by_length[m][<span class="st">'sem'</span>] <span class="op">=</span> np.array(sems)</span>
+<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a>    metric_by_length[m][<span class="st">'global'</span>] <span class="op">=</span> (</span>
+<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a>        (<span class="bu">getattr</span>(segment_ds, <span class="ss">f"rel_</span><span class="sc">{</span>m<span class="sc">}</span><span class="ss">"</span>)<span class="op">*</span>segment_ds.length).<span class="bu">sum</span>() <span class="op">/</span></span>
+<span id="cb13-18"><a href="#cb13-18" aria-hidden="true" tabindex="-1"></a>         segment_ds.length.<span class="bu">sum</span>()</span>
+<span id="cb13-19"><a href="#cb13-19" aria-hidden="true" tabindex="-1"></a>    )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>We save all these metrics to plot them nicely later.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>figure_name <span class="op">=</span> <span class="st">"relative_error_segment_length"</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>plot_data_path <span class="op">=</span> (FIG_PATH<span class="op">/</span>figure_name).with_suffix(<span class="st">".pkl"</span>)</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> <span class="bu">open</span>(plot_data_path, <span class="st">'wb'</span>) <span class="im">as</span> f:</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>    pickle.dump(metric_by_length, f, protocol<span class="op">=</span>pickle.HIGHEST_PROTOCOL)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Let’s see the overall relative error for each method.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"STEP: </span><span class="sc">{</span>metric_by_length_D[<span class="st">'err'</span>][<span class="st">'global'</span>]<span class="sc">:.3f}</span><span class="ss">"</span>)</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"STEP + segments: </span><span class="sc">{</span>metric_by_length_D[<span class="st">'err_segment'</span>][<span class="st">'global'</span>]<span class="sc">:.3f}</span><span class="ss">"</span>)</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"TA-MSD + segments: </span><span class="sc">{</span>metric_by_length_D[<span class="st">'err_tamsd'</span>][<span class="st">'global'</span>]<span class="sc">:.3f}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-stdout">
+<pre><code>STEP: 0.226
+STEP + segments: 0.189
+TA-MSD + segments: 0.249</code></pre>
+</div>
+</div>
+<p>STEP outperforms the TA-MSD baseline despite its disadvantage. It even reduces the error by <span class="math inline">\(\sim 25\%\)</span> when we consider the pre-segmented trajectory! In the plot right below, we see the prediction error over segments at different lengths.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>fig <span class="op">=</span> plt.figure(figsize<span class="op">=</span>(<span class="fl">1.5</span><span class="op">*</span>fig_size, fig_size))</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>labels <span class="op">=</span> [<span class="st">'STEP'</span>, <span class="st">'STEP + segments'</span>, <span class="st">'TA-MSD + segments'</span>]</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>markers <span class="op">=</span> [<span class="st">'o'</span>, <span class="st">'s'</span>, <span class="st">'D'</span>]</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i, m <span class="kw">in</span> <span class="bu">enumerate</span>(metric_by_length.keys()):</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>    mean, sem <span class="op">=</span> metric_by_length[m][<span class="st">'mean'</span>], metric_by_length[m][<span class="st">'sem'</span>]</span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>    plt.plot(lengths, mean, color<span class="op">=</span>colors[i], label<span class="op">=</span>labels[i],</span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>             zorder<span class="op">=-</span>i, lw<span class="op">=</span>linewidth)</span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>    plt.fill_between(lengths, mean <span class="op">-</span> sem, mean <span class="op">+</span> sem, color<span class="op">=</span>colors[i],</span>
+<span id="cb17-10"><a href="#cb17-10" aria-hidden="true" tabindex="-1"></a>                     alpha<span class="op">=</span><span class="fl">0.3</span>, zorder<span class="op">=-</span>i)</span>
+<span id="cb17-11"><a href="#cb17-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-12"><a href="#cb17-12" aria-hidden="true" tabindex="-1"></a>plt.grid(alpha<span class="op">=</span>alpha_grid)</span>
+<span id="cb17-13"><a href="#cb17-13" aria-hidden="true" tabindex="-1"></a>plt.legend(fontsize<span class="op">=</span><span class="dv">11</span>)</span>
+<span id="cb17-14"><a href="#cb17-14" aria-hidden="true" tabindex="-1"></a>plt.tick_params(labelsize<span class="op">=</span><span class="dv">14</span>)</span>
+<span id="cb17-15"><a href="#cb17-15" aria-hidden="true" tabindex="-1"></a>plt.ylim([<span class="fl">0.05</span>, <span class="fl">0.75</span>])</span>
+<span id="cb17-16"><a href="#cb17-16" aria-hidden="true" tabindex="-1"></a>plt.xticks([<span class="dv">10</span>, <span class="dv">50</span>, <span class="dv">100</span>, <span class="dv">150</span>, <span class="dv">190</span>])</span>
+<span id="cb17-17"><a href="#cb17-17" aria-hidden="true" tabindex="-1"></a>plt.yticks([<span class="fl">0.2</span>, <span class="fl">0.4</span>, <span class="fl">0.6</span>])</span>
+<span id="cb17-18"><a href="#cb17-18" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">"Segment length"</span>, fontsize<span class="op">=</span><span class="dv">16</span>)</span>
+<span id="cb17-19"><a href="#cb17-19" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">"Relative error"</span>, fontsize<span class="op">=</span><span class="dv">16</span>)<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<p><img src="01_analysis_bm_files/figure-html/cell-17-output-1.png" class="img-fluid"></p>
+</div>
+</div>
+<p>STEP systematically outperforms the TA-MSD baseline for short segments. Furthermore, when we provide it with the isolated segments, we can achieve outstanding low errors, specially for the shortest segments. This is reasonable because the shorter segments carry much less information to properly determine <span class="math inline">\(D\)</span>, and they can even be confused with simple stochastic fluctuations of the phenomena. This makes it harder to accurately determine the segment boundaries, as shown by the difference between the blue and red lines.</p>
+</section>
+</section>
+<section id="changepoint-detection" class="level1">
+<h1>Changepoint detection</h1>
+<p>While our approach does not explicitly provide any changepoints, changes in diffusion properties emerge naturally in the predictions. Thus, we can use them to enhance dedicated changepoint detection algorithms. Here, we use the <a href="https://centre-borelli.github.io/ruptures-docs/">ruptures library</a>, which implements a kernel changepoint detection algorithm (see <a href="https://borjarequena.github.io/step/source/baselines.html#ruptures">baselines</a> and their <a href="https://www.sciencedirect.com/science/article/abs/pii/S0165168419303494?via%3Dihub">review paper</a>).</p>
+<p>We compare the results obtained applying ruptures over the trajectory displacements and over the STEP predictions. To quantify the performance, we compute the Jaccard index (JI) between the predicted changepoints and the ground truh. This metric can account for false positives and false negatives (see our <a href="https://borjarequena.github.io/step/source/utils.html#model-evaluation">model evaluation methods</a>), which is very important in these cases as the changepoint detection algorithm will infer the number of changepoints, meaning that there may be a different number of predicted and ground truth changepoints.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>The Jaccard index is a function of the true positives (TP), false positives (FP), and false negatives (FN): <span class="math display">\[JI = \frac{TP}{TP + FP + FN}\,.\]</span> Intuitively, it provides the percentage of correct predictions out of all of them.</p>
+</div>
+</div>
+<p>Then, we also compute the mean squared error (MSE) between the predicted and their corresponding true changepoints.</p>
+<section id="generate-the-data-1" class="level2">
+<h2 class="anchored" data-anchor-id="generate-the-data-1">Generate the data</h2>
+<p>In order to obtain a better insight about the strengths of the methods, we test them in trajectories with one single changepoint. In this way, we study how the changepoint position and difference between diffusion coefficient in consecutive segments affects the performance.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>Ds <span class="op">=</span> np.logspace(<span class="op">-</span><span class="dv">3</span>, <span class="dv">3</span>, <span class="dv">1000</span>) </span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>ds <span class="op">=</span> create_bm_segmentation_dataset(<span class="dv">50000</span>, dim<span class="op">=</span>dim, Ds<span class="op">=</span>Ds)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>ds[<span class="st">'y'</span>] <span class="op">=</span> ds[<span class="st">'y_exp'</span>].<span class="bu">apply</span>(torch.squeeze)</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>ds[<span class="st">'y_log'</span>] <span class="op">=</span> ds[<span class="st">'y'</span>].<span class="bu">apply</span>(torch.log10)</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>ds[<span class="st">'D_diff'</span>] <span class="op">=</span> ds[<span class="st">'y_log'</span>].<span class="bu">apply</span>(<span class="kw">lambda</span> x: (x[<span class="dv">1</span>] <span class="op">-</span> x[<span class="dv">0</span>]).item())</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>ds[<span class="st">'cp'</span>] <span class="op">=</span> ds[<span class="st">'cp'</span>].<span class="bu">apply</span>(<span class="kw">lambda</span> x: x.numpy())</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>ds <span class="op">=</span> ds.drop(columns<span class="op">=</span>[<span class="st">'y_mod'</span>, <span class="st">'y_exp'</span>, <span class="st">'models'</span>, <span class="st">'exps'</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="get-the-predictions-1" class="level2">
+<h2 class="anchored" data-anchor-id="get-the-predictions-1">Get the predictions</h2>
+<p>Let’s get the predictions! We define a couple of functions to make our code more readable.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> make_batch(df, i, bs, col<span class="op">=</span><span class="st">'x'</span>):</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"Return a batch of samples from df."</span></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>    samples <span class="op">=</span> [x.transpose(<span class="op">-</span><span class="dv">1</span>, <span class="dv">0</span>) <span class="cf">for</span> x <span class="kw">in</span> ds.loc[i<span class="op">*</span>bs:(i<span class="op">+</span><span class="dv">1</span>)<span class="op">*</span>bs<span class="op">-</span><span class="dv">1</span>, col]]</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> torch.stack(samples, dim<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> predict(model, x):</span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>    <span class="co">"Get prediction of `model` on batch `x`."</span></span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> to_detach(model(x.to(default_device())).squeeze()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Ready to go!</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>bs <span class="op">=</span> <span class="dv">400</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>n_batch <span class="op">=</span> np.ceil(ds.shape[<span class="dv">0</span>]<span class="op">/</span>bs).astype(<span class="bu">int</span>)</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> tqdm(<span class="bu">range</span>(n_batch)):</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>    xb <span class="op">=</span> make_batch(ds, i, bs)</span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>    pred <span class="op">=</span> predict(learn_diff.model, xb)</span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a>    ds.loc[i<span class="op">*</span>bs:(i<span class="op">+</span><span class="dv">1</span>)<span class="op">*</span>bs<span class="op">-</span><span class="dv">1</span>, <span class="st">'pred'</span>] <span class="op">=</span> np.array([p <span class="cf">for</span> p <span class="kw">in</span> pred],</span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a>                                               dtype<span class="op">=</span><span class="bu">object</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"2a5e2c477243450aa46e5101c6be4bf9","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+</div>
+<p>Let’s save this for later.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>ds_path <span class="op">=</span> DATA_PATH<span class="op">/</span>get_bmds_fname(<span class="dv">1</span>, max_t, dim, <span class="st">'with_preds'</span>)</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>ds.to_pickle(ds_path)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="overall-performance-1" class="level2">
+<h2 class="anchored" data-anchor-id="overall-performance-1">Overall performance</h2>
+<p>Let’s compute the JI for the task using the STEP predictions and the trajectory displacements for the kernel changepoint prediction algorithm in ruptures.</p>
+<p>To ease the code readability, we define a function to combine two dictionaries together (adhoc for our purposes).</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> merge_dict(dict_1, dict_2):</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"Merge the information of two dictionaries."</span></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>    merge <span class="op">=</span> {}</span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> k, v1 <span class="kw">in</span> dict_1.items():</span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>        v2 <span class="op">=</span> dict_2.get(k, [])</span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="bu">isinstance</span>(v1, Iterable) <span class="kw">and</span> <span class="bu">isinstance</span>(v2, Iterable):</span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>            merge[k] <span class="op">=</span> [<span class="op">*</span>v1, <span class="op">*</span>v2]</span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>        <span class="cf">elif</span> <span class="bu">isinstance</span>(v1, Iterable):</span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>            merge[k] <span class="op">=</span> [<span class="op">*</span>v1, v2]</span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a>        <span class="cf">elif</span> <span class="bu">isinstance</span>(v2, Iterable):</span>
+<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a>            merge[k] <span class="op">=</span> [v1, <span class="op">*</span>v2]</span>
+<span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a>        <span class="cf">else</span>:</span>
+<span id="cb23-13"><a href="#cb23-13" aria-hidden="true" tabindex="-1"></a>            merge[k] <span class="op">=</span> [v1, v2]</span>
+<span id="cb23-14"><a href="#cb23-14" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> merge</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Now we process every trajectory and retrieve the changepoints with ruptures using both the displacements and the STEP prediction. Then, we compute the JI between the prediction and the ground truth and, finally, the MSE for the true positives.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>method_pen <span class="op">=</span> {<span class="st">'pred'</span>: <span class="fl">2.</span>, <span class="st">'displ'</span>: <span class="fl">6.</span>}</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>methods <span class="op">=</span> <span class="bu">list</span>(method_pen.keys())</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>metrics_method <span class="op">=</span> {m: {} <span class="cf">for</span> m <span class="kw">in</span> methods}</span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i, row <span class="kw">in</span> tqdm(ds.iterrows()):</span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>    traj, pred, true_cp <span class="op">=</span> row.x.numpy(), row.pred.numpy(), row.cp</span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>    displacements <span class="op">=</span> np.log(get_displacements(traj))</span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> m <span class="kw">in</span> methods:</span>
+<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a>        seg_data <span class="op">=</span> (pred <span class="cf">if</span> m <span class="op">==</span> <span class="st">'pred'</span></span>
+<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a>                    <span class="cf">else</span> displacements <span class="cf">if</span> m <span class="op">==</span> <span class="st">'displ'</span></span>
+<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a>                    <span class="cf">else</span> <span class="va">None</span>)</span>
+<span id="cb24-13"><a href="#cb24-13" aria-hidden="true" tabindex="-1"></a>        pred_cp <span class="op">=</span> ruptures_cp(seg_data, pen<span class="op">=</span>method_pen[m], min_size<span class="op">=</span><span class="dv">5</span>)</span>
+<span id="cb24-14"><a href="#cb24-14" aria-hidden="true" tabindex="-1"></a>        metrics <span class="op">=</span> evaluate_cp_prediction(true_cp, pred_cp)</span>
+<span id="cb24-15"><a href="#cb24-15" aria-hidden="true" tabindex="-1"></a>        metrics_method[m] <span class="op">=</span> merge_dict(metrics, metrics_method[m])</span>
+<span id="cb24-16"><a href="#cb24-16" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> k, v <span class="kw">in</span> metrics.items():</span>
+<span id="cb24-17"><a href="#cb24-17" aria-hidden="true" tabindex="-1"></a>            <span class="cf">if</span> metrics[<span class="st">'tp'</span>]:</span>
+<span id="cb24-18"><a href="#cb24-18" aria-hidden="true" tabindex="-1"></a>                ds.loc[i, <span class="ss">f'cp_</span><span class="sc">{</span>m<span class="sc">}</span><span class="ss">_</span><span class="sc">{</span>k<span class="sc">}</span><span class="ss">'</span>] <span class="op">=</span> v[<span class="dv">0</span>] <span class="cf">if</span> k <span class="op">==</span> <span class="st">'sq_error'</span> <span class="cf">else</span> v</span>
+<span id="cb24-19"><a href="#cb24-19" aria-hidden="true" tabindex="-1"></a>            <span class="cf">else</span>:</span>
+<span id="cb24-20"><a href="#cb24-20" aria-hidden="true" tabindex="-1"></a>                ds.loc[i, <span class="ss">f'cp_</span><span class="sc">{</span>m<span class="sc">}</span><span class="ss">_</span><span class="sc">{</span>k<span class="sc">}</span><span class="ss">'</span>] <span class="op">=</span> <span class="op">-</span><span class="dv">1</span> <span class="cf">if</span> k <span class="op">==</span> <span class="st">'sq_error'</span> <span class="cf">else</span> v</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Now we can compute the overall JI and MSE for both approaches over the whole test set.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>method_mse, method_j_idx <span class="op">=</span> {}, {}</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> m, v <span class="kw">in</span> metrics_method.items():</span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>    method_mse[m] <span class="op">=</span> np.mean(v[<span class="st">'sq_error'</span>])</span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>    tp, fp, fn <span class="op">=</span> np.<span class="bu">sum</span>(v[<span class="st">'tp'</span>]), np.<span class="bu">sum</span>(v[<span class="st">'fp'</span>]), np.<span class="bu">sum</span>(v[<span class="st">'fn'</span>])</span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>    method_j_idx[m] <span class="op">=</span> jaccard_index(tp, fp, fn)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"d30cd0cd50384d289788e40c07a0b8d0","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>method_j_idx, method_mse</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<pre><code>({'pred': 0.8333494778851929, 'displ': 0.7963921392139214},
+ {'pred': 0.6803905614320586, 'displ': 0.6163644925829997})</code></pre>
+</div>
+</div>
+<p>We see that running rutpures on top of STEP increases the JI from 0.796 to 0.833, meaning that we reduce the errors by about <span class="math inline">\(20\%\)</span>. It is natural to expect that, by detecting more changepoints (higher JI), the method then incurs a larger MSE. This is because we consider a threshold of <span class="math inline">\(\mathcal{E}=5\)</span> points from the ground truth to count the predictions as true positive. The results indicate that the additional changepoints detected with STEP lie, most likely, at the limit of the threshold.</p>
+</section>
+<section id="difference-between-consecutive-segments" class="level2">
+<h2 class="anchored" data-anchor-id="difference-between-consecutive-segments">Difference between consecutive segments</h2>
+<p>Now that we have an idea of the overall behaviour of both methods, let’s look at the JI as function of the relative difference between <span class="math inline">\(D\)</span> of consecutive segments. Inuitively, the larger the difference, the easier it is to detect where the change is happening.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Beware that the difference in log space is the ratio in real space. Don’t get confused :)</p>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>bins_D_diff <span class="op">=</span> np.linspace(<span class="op">-</span><span class="dv">6</span>, <span class="dv">6</span>, <span class="dv">100</span>) <span class="co"># Difference in log space</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>j_idx_by_diff <span class="op">=</span> {m: [] <span class="cf">for</span> m <span class="kw">in</span> methods}</span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>mse_by_diff <span class="op">=</span> {m: [] <span class="cf">for</span> m <span class="kw">in</span> methods}</span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> low, high <span class="kw">in</span> <span class="bu">zip</span>(bins_D_diff[:<span class="op">-</span><span class="dv">1</span>], bins_D_diff[<span class="dv">1</span>:]):</span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>    mask <span class="op">=</span> (ds.D_diff <span class="op">&gt;=</span> low) <span class="op">&amp;</span> (ds.D_diff <span class="op">&lt;</span> high)</span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> m <span class="kw">in</span> methods:</span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a>        tp <span class="op">=</span> ds.loc[mask, <span class="ss">f'cp_</span><span class="sc">{</span>m<span class="sc">}</span><span class="ss">_tp'</span>].<span class="bu">sum</span>()</span>
+<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a>        fp <span class="op">=</span> ds.loc[mask, <span class="ss">f'cp_</span><span class="sc">{</span>m<span class="sc">}</span><span class="ss">_fp'</span>].<span class="bu">sum</span>()</span>
+<span id="cb28-10"><a href="#cb28-10" aria-hidden="true" tabindex="-1"></a>        fn <span class="op">=</span> ds.loc[mask, <span class="ss">f'cp_</span><span class="sc">{</span>m<span class="sc">}</span><span class="ss">_fn'</span>].<span class="bu">sum</span>()</span>
+<span id="cb28-11"><a href="#cb28-11" aria-hidden="true" tabindex="-1"></a>        j_idx_by_diff[m].append(jaccard_index(tp, fp, fn))</span>
+<span id="cb28-12"><a href="#cb28-12" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb28-13"><a href="#cb28-13" aria-hidden="true" tabindex="-1"></a>        mask_mse <span class="op">=</span> mask <span class="op">&amp;</span> (ds.loc[:, <span class="ss">f'cp_</span><span class="sc">{</span>m<span class="sc">}</span><span class="ss">_tp'</span>] <span class="op">==</span> <span class="dv">1</span>)</span>
+<span id="cb28-14"><a href="#cb28-14" aria-hidden="true" tabindex="-1"></a>        mse_by_diff[m].append(ds.loc[mask_mse, <span class="ss">f'cp_</span><span class="sc">{</span>m<span class="sc">}</span><span class="ss">_sq_error'</span>].mean())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>method_color <span class="op">=</span> {<span class="st">'pred'</span>: colors[<span class="dv">0</span>], <span class="st">'displ'</span>: colors_light[<span class="dv">3</span>]}</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>method_label <span class="op">=</span> {<span class="st">'pred'</span>: <span class="st">'KCPD + STEP'</span>, <span class="st">'displ'</span>: <span class="st">'KCPD + displ'</span>}</span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>method_ls <span class="op">=</span> {<span class="st">'pred'</span>: <span class="st">'solid'</span>, <span class="st">'displ'</span>: <span class="st">'dashed'</span>}</span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>fig <span class="op">=</span> plt.figure(figsize<span class="op">=</span>(<span class="fl">1.5</span><span class="op">*</span>fig_size, fig_size))</span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a>plt_x <span class="op">=</span> bins_D_diff[:<span class="op">-</span><span class="dv">1</span>] <span class="op">+</span> np.diff(bins_D_diff)</span>
+<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> m <span class="kw">in</span> methods:</span>
+<span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a>    plt.plot(plt_x, j_idx_by_diff[m], linewidth<span class="op">=</span>linewidth, label<span class="op">=</span>method_label[m],</span>
+<span id="cb29-9"><a href="#cb29-9" aria-hidden="true" tabindex="-1"></a>              color<span class="op">=</span>method_color[m], linestyle<span class="op">=</span>method_ls[m])</span>
+<span id="cb29-10"><a href="#cb29-10" aria-hidden="true" tabindex="-1"></a>plt.grid(alpha<span class="op">=</span>alpha_grid)</span>
+<span id="cb29-11"><a href="#cb29-11" aria-hidden="true" tabindex="-1"></a>plt.ylim([<span class="op">-</span><span class="fl">0.05</span>, <span class="fl">1.05</span>])</span>
+<span id="cb29-12"><a href="#cb29-12" aria-hidden="true" tabindex="-1"></a>plt.yticks([<span class="fl">0.</span>, <span class="fl">0.5</span>, <span class="fl">1.</span>])</span>
+<span id="cb29-13"><a href="#cb29-13" aria-hidden="true" tabindex="-1"></a>plt.xticks(np.arange(<span class="op">-</span><span class="dv">6</span>, <span class="dv">7</span>, <span class="dv">2</span>), [<span class="ss">f"$10^</span><span class="ch">{{</span><span class="sc">{</span>t<span class="sc">}</span><span class="ch">}}</span><span class="ss">$"</span> <span class="cf">for</span> t <span class="kw">in</span> np.arange(<span class="op">-</span><span class="dv">6</span>, <span class="dv">7</span>, <span class="dv">2</span>)])</span>
+<span id="cb29-14"><a href="#cb29-14" aria-hidden="true" tabindex="-1"></a>plt.legend(fontsize<span class="op">=</span><span class="dv">14</span>)</span>
+<span id="cb29-15"><a href="#cb29-15" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="vs">r"$D_2/D_1$"</span>, fontsize<span class="op">=</span><span class="dv">16</span>)</span>
+<span id="cb29-16"><a href="#cb29-16" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">"Jaccard index"</span>, fontsize<span class="op">=</span><span class="dv">16</span>)</span>
+<span id="cb29-17"><a href="#cb29-17" aria-hidden="true" tabindex="-1"></a>plt.tick_params(labelsize<span class="op">=</span><span class="dv">14</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<p><img src="01_analysis_bm_files/figure-html/cell-28-output-1.png" class="img-fluid"></p>
+</div>
+</div>
+<p>We see that the changepoint method with STEP does, indeed, outperform the baseline for the whole range of <span class="math inline">\(D_2/D_1\)</span>. They converge to the same results in the limit of very similar diffusion coefficients <span class="math inline">\(D_2\approx D_1\)</span>, where the changes is barely detectable. Indeed, when <span class="math inline">\(D_2=D_1\)</span> there is no change to detect!</p>
+<p>Interestingly, we get a nearly perfect detection when the diffusion coefficients are just one order of magnitude appart.</p>
+</section>
+<section id="changepoint-position" class="level2">
+<h2 class="anchored" data-anchor-id="changepoint-position">Changepoint position</h2>
+<p>We can also study the impact of the changepoint position in the detection, which was shown to be a very important factor in the <a href="https://www.nature.com/articles/s41467-021-26320-w">AnDi Challenge</a>. Shorter segments are much harder to characterize and, by the same principle we saw the error increase for short segments, we expect the performance to drop when the change point is near the trajectory ends.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>bins_cp_pos <span class="op">=</span> np.arange(<span class="dv">10</span>, <span class="dv">200</span>, <span class="dv">10</span>)</span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>j_idx_by_position_D <span class="op">=</span> {m: [] <span class="cf">for</span> m <span class="kw">in</span> methods}</span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> low, high <span class="kw">in</span> <span class="bu">zip</span>(bins_cp_pos[:<span class="op">-</span><span class="dv">1</span>], bins_cp_pos[<span class="dv">1</span>:]):</span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>    mask <span class="op">=</span> (low <span class="op">&lt;=</span> ds.cp) <span class="op">&amp;</span> (ds.cp <span class="op">&lt;</span> high)</span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> m <span class="kw">in</span> methods:</span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a>        tp <span class="op">=</span> ds.loc[mask, <span class="ss">f'cp_</span><span class="sc">{</span>m<span class="sc">}</span><span class="ss">_tp'</span>].<span class="bu">sum</span>()</span>
+<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a>        fp <span class="op">=</span> ds.loc[mask, <span class="ss">f'cp_</span><span class="sc">{</span>m<span class="sc">}</span><span class="ss">_fp'</span>].<span class="bu">sum</span>()</span>
+<span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a>        fn <span class="op">=</span> ds.loc[mask, <span class="ss">f'cp_</span><span class="sc">{</span>m<span class="sc">}</span><span class="ss">_fn'</span>].<span class="bu">sum</span>()</span>
+<span id="cb30-9"><a href="#cb30-9" aria-hidden="true" tabindex="-1"></a>        j_idx_by_position_D[m].append(jaccard_index(tp, fp, fn))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>fig <span class="op">=</span> plt.figure(figsize<span class="op">=</span>(<span class="fl">1.5</span><span class="op">*</span>fig_size, fig_size))</span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> m <span class="kw">in</span> methods:</span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>    plt.plot(j_idx_by_position_D[m], linewidth<span class="op">=</span>linewidth, label<span class="op">=</span>method_label[m],</span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>              color<span class="op">=</span>method_color[m], linestyle<span class="op">=</span>method_ls[m])</span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a>x_tick_idx <span class="op">=</span> np.array([<span class="dv">0</span>, <span class="dv">9</span>, <span class="dv">17</span>])</span>
+<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a>plt.xticks(x_tick_idx, </span>
+<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a>           [<span class="ss">f'</span><span class="sc">{</span>low<span class="sc">}</span><span class="ss">-</span><span class="sc">{</span>high<span class="sc">}</span><span class="ss">'</span> <span class="cf">for</span> low, high <span class="kw">in</span> <span class="bu">zip</span>(bins_cp_pos[x_tick_idx], bins_cp_pos[x_tick_idx<span class="op">+</span><span class="dv">1</span>])])</span>
+<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a>plt.grid(alpha<span class="op">=</span>alpha_grid)</span>
+<span id="cb31-9"><a href="#cb31-9" aria-hidden="true" tabindex="-1"></a>plt.ylim([<span class="op">-</span><span class="fl">0.05</span>, <span class="fl">1.05</span>])</span>
+<span id="cb31-10"><a href="#cb31-10" aria-hidden="true" tabindex="-1"></a>plt.yticks([<span class="fl">0.</span>, <span class="fl">0.5</span>, <span class="fl">1.</span>])</span>
+<span id="cb31-11"><a href="#cb31-11" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">"Jaccard index"</span>, fontsize<span class="op">=</span><span class="dv">16</span>)</span>
+<span id="cb31-12"><a href="#cb31-12" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">"Changepoint position"</span>, fontsize<span class="op">=</span><span class="dv">16</span>)</span>
+<span id="cb31-13"><a href="#cb31-13" aria-hidden="true" tabindex="-1"></a>plt.tick_params(labelsize<span class="op">=</span><span class="dv">14</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<p><img src="01_analysis_bm_files/figure-html/cell-30-output-1.png" class="img-fluid"></p>
+</div>
+</div>
+<p>Again, we clearly see how STEP outperforms the baseline with trajectory displacements in all circumstances. Furthermore, both methods show impressive resilience to the changepoint position, as their performance is barely affected by it.</p>
+</section>
+</section>
+<section id="effect-of-the-number-of-segments" class="level1">
+<h1>Effect of the number of segments</h1>
+<p>An important factor to consider is the number of segments along trajectories. We have trained our models over trajectories with 2 to 5 segments, so it is very important to assess whether they can generalize to an arbitrary number of segments.</p>
+<p>Here, we study the pointwise prediction error and the Jaccard index for the changepoint detection in trajectories with various segments of constant length.</p>
+<section id="generate-the-data-2" class="level2">
+<h2 class="anchored" data-anchor-id="generate-the-data-2">Generate the data</h2>
+<p>We generate a data set comprised of trajectories with different number of segments at several constant segment lengths. This way, we can look at the impact of both the number of segments and their lengths separately.</p>
+<p>We define our custom methods here just for this test, provided that we do not have adhoc functions to generate this kind of data. You can skip these cells if you already have a test set.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="at">@delegates</span>(brownian_motion)</span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> constant_segment_trajs(N, segment_length, n_change_points<span class="op">=</span><span class="dv">1</span>,</span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>                                  Ds<span class="op">=</span>np.logspace(<span class="op">-</span><span class="dv">3</span>, <span class="dv">3</span>, <span class="dv">1000</span>), <span class="op">**</span>kwargs):</span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>    <span class="co">"Create `N` trajectories with constant segment length."</span></span>
+<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a>    n_segments <span class="op">=</span> n_change_points <span class="op">+</span> <span class="dv">1</span></span>
+<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a>    max_t <span class="op">=</span> n_segments <span class="op">*</span> segment_length</span>
+<span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a>    segment_D <span class="op">=</span> np.random.choice(Ds, size<span class="op">=</span>(N, n_segments))</span>
+<span id="cb32-8"><a href="#cb32-8" aria-hidden="true" tabindex="-1"></a>    point_D <span class="op">=</span> np.repeat(segment_D, segment_length, axis<span class="op">=-</span><span class="dv">1</span>)[:, <span class="va">None</span>, :]</span>
+<span id="cb32-9"><a href="#cb32-9" aria-hidden="true" tabindex="-1"></a>    bms <span class="op">=</span> brownian_motion(N, max_t, point_D, <span class="op">**</span>kwargs)</span>
+<span id="cb32-10"><a href="#cb32-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> bms, point_D</span>
+<span id="cb32-11"><a href="#cb32-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb32-12"><a href="#cb32-12" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> create_constant_segment_dataset(N, segment_length,</span>
+<span id="cb32-13"><a href="#cb32-13" aria-hidden="true" tabindex="-1"></a>                                    n_change_points<span class="op">=</span><span class="dv">1</span>, dim<span class="op">=</span><span class="dv">2</span>):</span>
+<span id="cb32-14"><a href="#cb32-14" aria-hidden="true" tabindex="-1"></a>    <span class="co">"Creates a dataset of `N` trajectories with constant segment length."</span></span>
+<span id="cb32-15"><a href="#cb32-15" aria-hidden="true" tabindex="-1"></a>    data <span class="op">=</span> []</span>
+<span id="cb32-16"><a href="#cb32-16" aria-hidden="true" tabindex="-1"></a>    trajs, labels <span class="op">=</span> constant_segment_trajs(N, segment_length, </span>
+<span id="cb32-17"><a href="#cb32-17" aria-hidden="true" tabindex="-1"></a>                                           n_change_points<span class="op">=</span>n_change_points,</span>
+<span id="cb32-18"><a href="#cb32-18" aria-hidden="true" tabindex="-1"></a>                                           dim<span class="op">=</span>dim)</span>
+<span id="cb32-19"><a href="#cb32-19" aria-hidden="true" tabindex="-1"></a>    length <span class="op">=</span> trajs.shape[<span class="op">-</span><span class="dv">1</span>]</span>
+<span id="cb32-20"><a href="#cb32-20" aria-hidden="true" tabindex="-1"></a>    cp <span class="op">=</span> np.arange(segment_length, length, segment_length)</span>
+<span id="cb32-21"><a href="#cb32-21" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> traj, label <span class="kw">in</span> <span class="bu">zip</span>(trajs, labels):</span>
+<span id="cb32-22"><a href="#cb32-22" aria-hidden="true" tabindex="-1"></a>        x, y <span class="op">=</span> tensor(traj), tensor(label).squeeze()</span>
+<span id="cb32-23"><a href="#cb32-23" aria-hidden="true" tabindex="-1"></a>        data.append({<span class="st">'dim'</span>: dim, <span class="st">'len'</span>: length, <span class="st">'seg_len'</span>: segment_length,</span>
+<span id="cb32-24"><a href="#cb32-24" aria-hidden="true" tabindex="-1"></a>                        <span class="st">'n_cp'</span>: n_change_points, <span class="st">'cp'</span>: cp,</span>
+<span id="cb32-25"><a href="#cb32-25" aria-hidden="true" tabindex="-1"></a>                        <span class="st">'x'</span>: x, <span class="st">'y'</span>: y, <span class="st">'y_log'</span>: torch.log10(y)})</span>
+<span id="cb32-26"><a href="#cb32-26" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> pd.DataFrame.from_records(data)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>With these functions, we can easily create our data set. We consider trajectories with none to 10 changepoints and segment lengths of 20, 40 and 60.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>n_set, segment_lengths, cps <span class="op">=</span> <span class="dv">2000</span>, [<span class="dv">20</span>, <span class="dv">40</span>, <span class="dv">60</span>], np.arange(<span class="dv">11</span>)</span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>Ds <span class="op">=</span> np.logspace(<span class="op">-</span><span class="dv">3</span>, <span class="dv">3</span>, <span class="dv">1000</span>) </span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>datasets <span class="op">=</span> [create_constant_segment_dataset(n_set, sl, n_change_points<span class="op">=</span>n_cp) </span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a>            <span class="cf">for</span> sl <span class="kw">in</span> segment_lengths <span class="cf">for</span> n_cp <span class="kw">in</span> tqdm(cps)]</span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a>ds <span class="op">=</span> combine_datasets(datasets, shuffle<span class="op">=</span><span class="va">False</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="get-the-predictions-2" class="level2">
+<h2 class="anchored" data-anchor-id="get-the-predictions-2">Get the predictions</h2>
+<p>With our dataset ready, we can proceed to perform the predictions. We store them in the same dataframe.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>bs <span class="op">=</span> <span class="dv">50</span></span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>n_batch <span class="op">=</span> np.ceil(ds.shape[<span class="dv">0</span>]<span class="op">/</span>bs).astype(<span class="bu">int</span>)</span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> tqdm(<span class="bu">range</span>(n_batch)):</span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a>    xb <span class="op">=</span> make_batch(ds, i, bs).to(default_device())</span>
+<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a>    pred <span class="op">=</span> to_detach(learn_diff.model(xb)).squeeze()</span>
+<span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a>    ds.loc[i<span class="op">*</span>bs:(i<span class="op">+</span><span class="dv">1</span>)<span class="op">*</span>bs<span class="op">-</span><span class="dv">1</span>, <span class="st">'pred'</span>] <span class="op">=</span> np.array([p <span class="cf">for</span> p <span class="kw">in</span> pred], dtype<span class="op">=</span><span class="bu">object</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="pointwise-error" class="level2">
+<h2 class="anchored" data-anchor-id="pointwise-error">Pointwise error</h2>
+<p>So far, we have characterized the prediction error with various metrics, such as the mean absolute error or the relative error, which focus on the pointwise performance.</p>
+<p>However, the pointwise relative error is a rather volatile quantity. For instance, in the case there is a large change between consecutive diffusion coefficients, e.g., from <span class="math inline">\(10^3\)</span> to <span class="math inline">\(10^{-3}\)</span>, even if the agent performs a perfect characterization, but fails by a single point, the relative error for the whole trajectory shoots up to <span class="math inline">\(\sim10^6\)</span>. Therefore, in order to obtain a better understanding of the actual prediction error, <span class="math inline">\(D_{\text{true}} - D_{\text{pred}}\)</span>, we consider the mean prediction of each segment <span class="math inline">\(D_{\text{true}} - \langle D_{\text{pred}}\rangle_{\text{seg}}\)</span>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> segment_rel_error(pred, y, cp):</span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"Segment-wise relative error. Assumes `pred` and `y` in log10."</span></span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>    segment_preds <span class="op">=</span> split_tensor(pred, cp)</span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a>    segment_means <span class="op">=</span> torch.stack([p.mean() <span class="cf">for</span> p <span class="kw">in</span> segment_preds])</span>
+<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a>    true_values <span class="op">=</span> torch.cat([y[<span class="dv">0</span>].unsqueeze(<span class="dv">0</span>), y[cp]])</span>
+<span id="cb35-6"><a href="#cb35-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> (<span class="dv">10</span><span class="op">**</span>(segment_means <span class="op">-</span> true_values) <span class="op">-</span> <span class="dv">1</span>).<span class="bu">abs</span>().mean()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="co"># metrics</span></span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>ds[<span class="st">'mae'</span>] <span class="op">=</span> (ds[<span class="st">'pred'</span>] <span class="op">-</span> ds[<span class="st">'y_log'</span>]).<span class="bu">abs</span>().<span class="bu">apply</span>(torch.mean)</span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>ds[<span class="st">'seg_rel_error'</span>] <span class="op">=</span> ds.<span class="bu">apply</span>(<span class="kw">lambda</span> x: segment_rel_error(x[<span class="st">'pred'</span>],</span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a>                                                           x[<span class="st">'y_log'</span>], x[<span class="st">'cp'</span>]),</span>
+<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a>                                                           axis<span class="op">=</span><span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Save the data for posterior processing.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>ds_path <span class="op">=</span> DATA_PATH<span class="op">/</span><span class="st">"constant_segment_analysis.pkl"</span></span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>ds.to_pickle(ds_path)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Finally, we compute the value of the relative erorr as a function of the number of change points.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb38"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> get_metric_sem_per_cp(metric, ds):</span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>    <span class="co">"Returns the metric per change point from dataset ds."</span></span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a>    segment_lengths <span class="op">=</span> ds.seg_len.unique().astype(<span class="bu">int</span>)</span>
+<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a>    n_cps <span class="op">=</span> ds.n_cp.unique().astype(<span class="bu">int</span>)</span>
+<span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a>    metric_per_cp <span class="op">=</span> np.zeros((<span class="bu">len</span>(segment_lengths), <span class="bu">len</span>(n_cps)))</span>
+<span id="cb38-6"><a href="#cb38-6" aria-hidden="true" tabindex="-1"></a>    err_per_cp <span class="op">=</span> np.zeros_like(metric_per_cp)                         </span>
+<span id="cb38-7"><a href="#cb38-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> k, length <span class="kw">in</span> <span class="bu">enumerate</span>(segment_lengths):</span>
+<span id="cb38-8"><a href="#cb38-8" aria-hidden="true" tabindex="-1"></a>        mask <span class="op">=</span> (ds.seg_len <span class="op">==</span> length) <span class="op">&amp;</span> (ds.n_cp <span class="op">==</span> n_cp)</span>
+<span id="cb38-9"><a href="#cb38-9" aria-hidden="true" tabindex="-1"></a>        metric_per_cp[k, :] <span class="op">=</span> np.array([<span class="bu">getattr</span>(ds, metric)[mask].mean()</span>
+<span id="cb38-10"><a href="#cb38-10" aria-hidden="true" tabindex="-1"></a>                                        <span class="cf">for</span> n_cp <span class="kw">in</span> n_cps])</span>
+<span id="cb38-11"><a href="#cb38-11" aria-hidden="true" tabindex="-1"></a>        err_per_cp[k, :] <span class="op">=</span> np.array([<span class="bu">getattr</span>(ds, metric)[mask].sem()</span>
+<span id="cb38-12"><a href="#cb38-12" aria-hidden="true" tabindex="-1"></a>                                     <span class="cf">for</span> n_cp <span class="kw">in</span> n_cps])</span>
+<span id="cb38-13"><a href="#cb38-13" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> metric_per_cp, err_per_cp</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>metric <span class="op">=</span> <span class="st">'seg_rel_error'</span></span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>rel_err_per_cp, rel_err_sem_per_cp <span class="op">=</span> get_metric_sem_per_cp(metric, ds)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb40"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>markers <span class="op">=</span> [<span class="st">'o'</span>, <span class="st">'s'</span>, <span class="st">'D'</span>]</span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>shades_blue <span class="op">=</span> [colors_light[<span class="dv">0</span>], colors[<span class="dv">0</span>], colors_dark[<span class="dv">0</span>]]</span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>n_seg_rel_error <span class="op">=</span> ds.n_cp.unique().astype(<span class="bu">int</span>) <span class="op">+</span> <span class="dv">1</span></span>
+<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a>fig <span class="op">=</span> plt.figure(figsize<span class="op">=</span>(<span class="fl">1.5</span><span class="op">*</span>fig_size, fig_size))</span>
+<span id="cb40-6"><a href="#cb40-6" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> k, (val, err, length) <span class="kw">in</span> <span class="bu">enumerate</span>(<span class="bu">zip</span>(rel_err_per_cp, rel_err_sem_per_cp, segment_lengths)):</span>
+<span id="cb40-7"><a href="#cb40-7" aria-hidden="true" tabindex="-1"></a>    plt.plot(n_seg_rel_error, val, marker <span class="op">=</span> markers[k], label<span class="op">=</span><span class="ss">f"length </span><span class="sc">{</span>length<span class="sc">}</span><span class="ss">"</span>, c<span class="op">=</span>shades_blue[k],</span>
+<span id="cb40-8"><a href="#cb40-8" aria-hidden="true" tabindex="-1"></a>               markerfacecolor<span class="op">=</span><span class="st">'w'</span>, lw<span class="op">=</span>linewidth)</span>
+<span id="cb40-9"><a href="#cb40-9" aria-hidden="true" tabindex="-1"></a>    plt.fill_between(n_seg_rel_error, val <span class="op">-</span> err, val <span class="op">+</span> err, alpha<span class="op">=</span><span class="fl">0.3</span>, color<span class="op">=</span>colors[<span class="dv">0</span>])</span>
+<span id="cb40-10"><a href="#cb40-10" aria-hidden="true" tabindex="-1"></a>plt.xticks([<span class="dv">2</span>, <span class="dv">6</span>, <span class="dv">10</span>])</span>
+<span id="cb40-11"><a href="#cb40-11" aria-hidden="true" tabindex="-1"></a>plt.ylim([<span class="fl">0.16</span>, <span class="fl">0.39</span>])</span>
+<span id="cb40-12"><a href="#cb40-12" aria-hidden="true" tabindex="-1"></a>plt.legend(fontsize<span class="op">=</span><span class="dv">14</span>, loc<span class="op">=</span><span class="st">'upper left'</span>)</span>
+<span id="cb40-13"><a href="#cb40-13" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">"Number of segments"</span>, fontsize<span class="op">=</span><span class="dv">16</span>)</span>
+<span id="cb40-14"><a href="#cb40-14" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">"Relative error"</span>, fontsize<span class="op">=</span><span class="dv">16</span>)</span>
+<span id="cb40-15"><a href="#cb40-15" aria-hidden="true" tabindex="-1"></a>plt.grid(alpha<span class="op">=</span>alpha_grid)</span>
+<span id="cb40-16"><a href="#cb40-16" aria-hidden="true" tabindex="-1"></a>plt.tick_params(labelsize<span class="op">=</span><span class="dv">14</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<p><img src="01_analysis_bm_files/figure-html/cell-39-output-1.png" class="img-fluid"></p>
+</div>
+</div>
+<p>We see that the error increases linearly with the number of segments. This means that every additional segment adds the same source of errors despite of how many there may already be.</p>
+<p>Furthermore, we see that the segment length has a much larger impact than the number of segments. For instance, it is harder to characterize a trajectory with two segments of length 20 (40 time steps in total), than one with 11 segments of length 40 (440 time steps in total). However, in concordance with the first results in this tutorial, once we reach a certain minimum length, the error stabilizes.</p>
+</section>
+<section id="changepoint-detection-1" class="level2">
+<h2 class="anchored" data-anchor-id="changepoint-detection-1">Changepoint detection</h2>
+<p>Let’s see now the impact on the changepoint detection task. We will compute the JI as a function of the number of segments.</p>
+<p>First of all, we filter out those trajectories without any changepoint.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>ds_cp <span class="op">=</span> ds[ds.n_cp <span class="op">!=</span> <span class="dv">0</span>].reset_index(drop<span class="op">=</span><span class="va">True</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Now let’s calculate the true positives, false positives and false negatives of every prediction to obtain the JI (see above and our <a href="https://borjarequena.github.io/step/source/utils.html#model-evaluation">model evaluation methods</a>).</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb42"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>j_idx_parameters <span class="op">=</span> {<span class="st">'tp'</span>: [], <span class="st">'fp'</span>: [], <span class="st">'fn'</span>: []}</span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> _, (pred, cp) <span class="kw">in</span> ds_cp[[<span class="st">'pred'</span>, <span class="st">'cp'</span>]].iterrows():</span>
+<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a>    metrics <span class="op">=</span> evaluate_cp_prediction(cp, ruptures_cp(pred.numpy(), pen<span class="op">=</span><span class="fl">2.</span>))</span>
+<span id="cb42-4"><a href="#cb42-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> k, v <span class="kw">in</span> metrics.items():</span>
+<span id="cb42-5"><a href="#cb42-5" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> k <span class="kw">in</span> j_idx_parameters.keys():</span>
+<span id="cb42-6"><a href="#cb42-6" aria-hidden="true" tabindex="-1"></a>            j_idx_parameters[k].append(v)</span>
+<span id="cb42-7"><a href="#cb42-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb42-8"><a href="#cb42-8" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> k, v <span class="kw">in</span> j_idx_parameters.items():</span>
+<span id="cb42-9"><a href="#cb42-9" aria-hidden="true" tabindex="-1"></a>    ds_cp[k] <span class="op">=</span> v</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Finally, we can compute the JI as function of the number of changepoints for every segment length.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a>j_idx_per_cp <span class="op">=</span> np.zeros_like(rel_err_per_cp)[:, :<span class="op">-</span><span class="dv">1</span>]</span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i, length <span class="kw">in</span> <span class="bu">enumerate</span>(ds_cp.seg_len.unique()):</span>
+<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> j, n_cp <span class="kw">in</span> <span class="bu">enumerate</span>(ds_cp.n_cp.unique().astype(<span class="bu">int</span>)):</span>
+<span id="cb43-4"><a href="#cb43-4" aria-hidden="true" tabindex="-1"></a>        mask <span class="op">=</span> (ds_cp.seg_len <span class="op">==</span> length) <span class="op">&amp;</span> (ds_cp.n_cp <span class="op">==</span> n_cp)</span>
+<span id="cb43-5"><a href="#cb43-5" aria-hidden="true" tabindex="-1"></a>        j_idx_per_cp[i, j] <span class="op">=</span> jaccard_index(ds_cp.tp[mask].<span class="bu">sum</span>(),</span>
+<span id="cb43-6"><a href="#cb43-6" aria-hidden="true" tabindex="-1"></a>                                           ds_cp.fp[mask].<span class="bu">sum</span>(),</span>
+<span id="cb43-7"><a href="#cb43-7" aria-hidden="true" tabindex="-1"></a>                                           ds_cp.fn[mask].<span class="bu">sum</span>())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb44"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a>n_seg <span class="op">=</span> ds_cp.n_cp.unique().astype(<span class="bu">int</span>) <span class="op">+</span> <span class="dv">1</span></span>
+<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> k, (val, length) <span class="kw">in</span> <span class="bu">enumerate</span>(<span class="bu">zip</span>(j_idx_per_cp, segment_lengths)):</span>
+<span id="cb44-3"><a href="#cb44-3" aria-hidden="true" tabindex="-1"></a>    plt.plot(n_seg, val, marker <span class="op">=</span> markers[k], label<span class="op">=</span><span class="ss">f"Length </span><span class="sc">{</span>length<span class="sc">}</span><span class="ss">"</span>, c<span class="op">=</span>shades_blue[k],</span>
+<span id="cb44-4"><a href="#cb44-4" aria-hidden="true" tabindex="-1"></a>               markerfacecolor<span class="op">=</span><span class="st">'w'</span>, lw<span class="op">=</span>linewidth)</span>
+<span id="cb44-5"><a href="#cb44-5" aria-hidden="true" tabindex="-1"></a>    <span class="co"># ax[1].fill_between(n_seg, val - err, val + err, alpha=0.3, color=colors[0])</span></span>
+<span id="cb44-6"><a href="#cb44-6" aria-hidden="true" tabindex="-1"></a>xticks <span class="op">=</span> [<span class="dv">2</span>, <span class="dv">6</span>, <span class="dv">10</span>]</span>
+<span id="cb44-7"><a href="#cb44-7" aria-hidden="true" tabindex="-1"></a>plt.xticks(xticks)</span>
+<span id="cb44-8"><a href="#cb44-8" aria-hidden="true" tabindex="-1"></a>plt.ylim([<span class="fl">0.7</span>, <span class="fl">1.</span>])</span>
+<span id="cb44-9"><a href="#cb44-9" aria-hidden="true" tabindex="-1"></a>plt.yticks([<span class="fl">0.7</span>, <span class="fl">0.8</span>, <span class="fl">0.9</span>, <span class="fl">1.</span>])</span>
+<span id="cb44-10"><a href="#cb44-10" aria-hidden="true" tabindex="-1"></a>plt.grid(alpha<span class="op">=</span>alpha_grid)</span>
+<span id="cb44-11"><a href="#cb44-11" aria-hidden="true" tabindex="-1"></a>plt.legend(fontsize<span class="op">=</span><span class="dv">14</span>)</span>
+<span id="cb44-12"><a href="#cb44-12" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">"Jaccard Index"</span>, fontsize<span class="op">=</span><span class="dv">16</span>)</span>
+<span id="cb44-13"><a href="#cb44-13" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="st">"Number of segments"</span>, fontsize<span class="op">=</span><span class="dv">16</span>)</span>
+<span id="cb44-14"><a href="#cb44-14" aria-hidden="true" tabindex="-1"></a>plt.tick_params(labelsize<span class="op">=</span><span class="dv">14</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<p><img src="01_analysis_bm_files/figure-html/cell-43-output-1.png" class="img-fluid"></p>
+</div>
+</div>
+<p>Again, we see that shorter segments are harder to characterize, and that segment length does not play a significant role beyond a certain threshold, as the curves for length 40 and 60 are very similar. In this case, we see that the trajectory length does, indeed, punish the performance more than it does for the pointwise error, as the model tends to accumulate missclasified changepoints along the way.</p>
+</section>
+</section>
+<section id="resilience-to-noise" class="level1">
+<h1>Resilience to noise</h1>
+<p>As a final test, we assess the resilience of STEP to localization noise. We simulate it as white nose added to the trajectories <span class="math inline">\(\sim\mathcal{N}(0,\sigma_{\text{noise}})\)</span>, just as we did in the <a href="https://borjarequena.github.io/step/tutorials/model_training.html">model training tutorial</a>.</p>
+<p>This way, we use the first noiseless test set from the beginning of this tutorial, and we add noise at different <span class="math inline">\(\sigma_{\text{noise}}\)</span>.</p>
+<section id="optional-load-the-data" class="level2">
+<h2 class="anchored" data-anchor-id="optional-load-the-data">(Optional) Load the data</h2>
+<p>Load the test set in case it is not in memory.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a>ds <span class="op">=</span> load_dataset(n_change<span class="op">=</span><span class="st">"1_to_4"</span>, dim<span class="op">=</span>dim, bm<span class="op">=</span><span class="va">True</span>, name<span class="op">=</span><span class="st">"test"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="get-the-predictions-3" class="level2">
+<h2 class="anchored" data-anchor-id="get-the-predictions-3">Get the predictions</h2>
+<p>Let’s get the predictions over the noisy trajectories. First of all, however, we will pre-compute the logarithm of our targets and rename some columns.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb46"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a>ds[<span class="st">'y'</span>] <span class="op">=</span> ds[<span class="st">'y_exp'</span>].<span class="bu">apply</span>(torch.squeeze)</span>
+<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a>ds[<span class="st">'y_log'</span>] <span class="op">=</span> ds[<span class="st">'y'</span>].<span class="bu">apply</span>(torch.log10)</span>
+<span id="cb46-3"><a href="#cb46-3" aria-hidden="true" tabindex="-1"></a><span class="co"># ds['cp'] = ds['cp'].apply(lambda x: x.numpy())</span></span>
+<span id="cb46-4"><a href="#cb46-4" aria-hidden="true" tabindex="-1"></a>ds <span class="op">=</span> ds.drop(columns<span class="op">=</span>[<span class="st">'y_mod'</span>, <span class="st">'y_exp'</span>, <span class="st">'models'</span>, <span class="st">'exps'</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>To make the most out of our trajectories, we will add 128 random levels of noise to each of them. We sample <span class="math inline">\(\sigma_{\text{noise}}\in[10^{-6}, 10^0]\)</span> uniformly in log space.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a>noise_samples <span class="op">=</span> <span class="dv">128</span></span>
+<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a>noise_max, noise_min <span class="op">=</span> <span class="dv">0</span>, <span class="op">-</span><span class="dv">6</span></span>
+<span id="cb47-3"><a href="#cb47-3" aria-hidden="true" tabindex="-1"></a>noise_range <span class="op">=</span> noise_max <span class="op">-</span> noise_min</span>
+<span id="cb47-4"><a href="#cb47-4" aria-hidden="true" tabindex="-1"></a>noise_traj <span class="op">=</span> torch.rand(ds.shape[<span class="dv">0</span>], noise_samples)<span class="op">*</span>noise_range <span class="op">+</span> noise_min</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Just like we have done at the beginning, we can compare the segment-wise prediction of STEP with the TA-MSD baseline.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb48"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a>shape <span class="op">=</span> (ds.shape[<span class="dv">0</span>], <span class="bu">len</span>(ds.x[<span class="dv">0</span>]), noise_traj.shape[<span class="dv">1</span>])</span>
+<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a>pred_noise <span class="op">=</span> torch.zeros(shape)</span>
+<span id="cb48-3"><a href="#cb48-3" aria-hidden="true" tabindex="-1"></a>pred_seg_noise <span class="op">=</span> torch.zeros(shape) </span>
+<span id="cb48-4"><a href="#cb48-4" aria-hidden="true" tabindex="-1"></a>pred_tamsd_noise <span class="op">=</span> torch.zeros(shape)</span>
+<span id="cb48-5"><a href="#cb48-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-6"><a href="#cb48-6" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> i, (x, cps) <span class="kw">in</span> tqdm(ds[[<span class="st">'x'</span>,<span class="st">'cp'</span>]].iterrows()):</span>
+<span id="cb48-7"><a href="#cb48-7" aria-hidden="true" tabindex="-1"></a>    noise <span class="op">=</span> torch.randn(noise_samples, <span class="op">*</span>x.T.shape)<span class="op">*</span><span class="dv">10</span><span class="op">**</span>noise_traj[i]</span>
+<span id="cb48-8"><a href="#cb48-8" aria-hidden="true" tabindex="-1"></a>    noisy_x <span class="op">=</span> x.T.unsqueeze(<span class="dv">0</span>) <span class="op">+</span> noise.unsqueeze(<span class="op">-</span><span class="dv">1</span>).unsqueeze(<span class="op">-</span><span class="dv">1</span>)</span>
+<span id="cb48-9"><a href="#cb48-9" aria-hidden="true" tabindex="-1"></a>    noisy_x <span class="op">-=</span> noisy_x[:, <span class="dv">0</span>].unsqueeze(<span class="dv">1</span>)</span>
+<span id="cb48-10"><a href="#cb48-10" aria-hidden="true" tabindex="-1"></a>    split_x <span class="op">=</span> split_tensor(noisy_x.transpose(<span class="dv">1</span>, <span class="dv">0</span>), cps)</span>
+<span id="cb48-11"><a href="#cb48-11" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb48-12"><a href="#cb48-12" aria-hidden="true" tabindex="-1"></a>    pred_noise[i] <span class="op">=</span> predict(learn_diff.model, noisy_x).T</span>
+<span id="cb48-13"><a href="#cb48-13" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb48-14"><a href="#cb48-14" aria-hidden="true" tabindex="-1"></a>    pred_seg, pred_tamsd <span class="op">=</span> [], []</span>
+<span id="cb48-15"><a href="#cb48-15" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> seg_x <span class="kw">in</span> split_x:</span>
+<span id="cb48-16"><a href="#cb48-16" aria-hidden="true" tabindex="-1"></a>        seg_x <span class="op">=</span> (seg_x <span class="op">-</span> seg_x[<span class="dv">0</span>]).transpose(<span class="dv">1</span>, <span class="dv">0</span>)</span>
+<span id="cb48-17"><a href="#cb48-17" aria-hidden="true" tabindex="-1"></a>        ones <span class="op">=</span> torch.ones(seg_x.shape[<span class="dv">1</span>])</span>
+<span id="cb48-18"><a href="#cb48-18" aria-hidden="true" tabindex="-1"></a>        pred <span class="op">=</span> to_detach(learn_diff.model(seg_x.cuda()).squeeze())</span>
+<span id="cb48-19"><a href="#cb48-19" aria-hidden="true" tabindex="-1"></a>        pred_seg.append(pred)</span>
+<span id="cb48-20"><a href="#cb48-20" aria-hidden="true" tabindex="-1"></a>        pred_tamsd.append(torch.stack([ones<span class="op">*</span>diffusion_coefficient_tamsd(s)</span>
+<span id="cb48-21"><a href="#cb48-21" aria-hidden="true" tabindex="-1"></a>                                       <span class="cf">for</span> s <span class="kw">in</span> seg_x]))</span>
+<span id="cb48-22"><a href="#cb48-22" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb48-23"><a href="#cb48-23" aria-hidden="true" tabindex="-1"></a>    pred_seg_noise[i] <span class="op">=</span> torch.cat(pred_seg, axis<span class="op">=-</span><span class="dv">1</span>).T</span>
+<span id="cb48-24"><a href="#cb48-24" aria-hidden="true" tabindex="-1"></a>    pred_tamsd_noise[i] <span class="op">=</span> torch.cat(pred_tamsd, axis<span class="op">=-</span><span class="dv">1</span>).T</span>
+<span id="cb48-25"><a href="#cb48-25" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb48-26"><a href="#cb48-26" aria-hidden="true" tabindex="-1"></a>predictions <span class="op">=</span> <span class="bu">dict</span>(<span class="bu">zip</span>([<span class="st">'full'</span>, <span class="st">'seg'</span>, <span class="st">'tamsd'</span>],</span>
+<span id="cb48-27"><a href="#cb48-27" aria-hidden="true" tabindex="-1"></a>                       [pred_noise, pred_seg_noise, pred_tamsd_noise]))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"11893abb56264143b6d6806bd9450d87","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+</div>
+<p>With the predictions, let’s compute the error performed at every point as a function of the noise to signal ratio <span class="math inline">\(\sigma_{\text{noise}}/D\)</span>.</p>
+<p>Since the diffusion coefficient changes along the trajectories, we need to compute <span class="math inline">\(\sigma_{\text{noise}}/D\)</span> at every time step of all the trajectories.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> torch.stack([t <span class="cf">for</span> t <span class="kw">in</span> ds[<span class="st">'y_log'</span>].values])</span>
+<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a>rel_noise <span class="op">=</span> noise_traj.unsqueeze(<span class="dv">1</span>) <span class="op">-</span> y.unsqueeze(<span class="op">-</span><span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Now we can compute the relative errors performed by every method at each time step.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a>errors <span class="op">=</span> {k: p <span class="op">-</span> y.unsqueeze(<span class="op">-</span><span class="dv">1</span>) <span class="cf">if</span> k <span class="op">!=</span> <span class="st">'tamsd'</span></span>
+<span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a>          <span class="cf">else</span> p<span class="op">/</span>(<span class="dv">10</span><span class="op">**</span>y.unsqueeze(<span class="op">-</span><span class="dv">1</span>)) <span class="op">-</span> <span class="dv">1</span> <span class="co"># Already get rel error for tamsd</span></span>
+<span id="cb50-3"><a href="#cb50-3" aria-hidden="true" tabindex="-1"></a>          <span class="cf">for</span> k, p <span class="kw">in</span> predictions.items()}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Since we’re dealing with infinitely many combinations of <span class="math inline">\(\sigma_{\text{noise}}\)</span> and <span class="math inline">\(D\)</span>, we compute the error as a function of small intervals of <span class="math inline">\(\sigma_{\text{noise}}/D\)</span>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a>bins <span class="op">=</span> torch.linspace(rel_noise.<span class="bu">min</span>(), rel_noise.<span class="bu">max</span>(), <span class="dv">100</span>)</span>
+<span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a>noise_err, noise_err_std, x, counts <span class="op">=</span> [], [], [], []</span>
+<span id="cb51-3"><a href="#cb51-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb51-4"><a href="#cb51-4" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> low, high <span class="kw">in</span> tqdm(<span class="bu">zip</span>(bins[:<span class="op">-</span><span class="dv">1</span>], bins[<span class="dv">1</span>:])):</span>
+<span id="cb51-5"><a href="#cb51-5" aria-hidden="true" tabindex="-1"></a>    mask <span class="op">=</span> (rel_noise <span class="op">&gt;=</span> low) <span class="op">&amp;</span> (rel_noise <span class="op">&lt;=</span> high)</span>
+<span id="cb51-6"><a href="#cb51-6" aria-hidden="true" tabindex="-1"></a>    x.append((low <span class="op">+</span> high)<span class="op">/</span><span class="dv">2</span>)</span>
+<span id="cb51-7"><a href="#cb51-7" aria-hidden="true" tabindex="-1"></a>    counts.append(mask.<span class="bu">float</span>().<span class="bu">sum</span>())</span>
+<span id="cb51-8"><a href="#cb51-8" aria-hidden="true" tabindex="-1"></a>    rel_errors <span class="op">=</span> [(<span class="dv">10</span><span class="op">**</span>err[mask] <span class="op">-</span> <span class="dv">1</span>).<span class="bu">abs</span>() <span class="cf">if</span> k <span class="op">!=</span> <span class="st">'tamsd'</span></span>
+<span id="cb51-9"><a href="#cb51-9" aria-hidden="true" tabindex="-1"></a>                  <span class="cf">else</span> err[mask].<span class="bu">abs</span>() </span>
+<span id="cb51-10"><a href="#cb51-10" aria-hidden="true" tabindex="-1"></a>                  <span class="cf">for</span> k, err <span class="kw">in</span> errors.items()]</span>
+<span id="cb51-11"><a href="#cb51-11" aria-hidden="true" tabindex="-1"></a>    noise_err.append(tensor([rel_err.mean() <span class="cf">for</span> rel_err <span class="kw">in</span> rel_errors]))</span>
+<span id="cb51-12"><a href="#cb51-12" aria-hidden="true" tabindex="-1"></a>    noise_err_std.append(tensor([rel_err.std() <span class="cf">for</span> rel_err <span class="kw">in</span> rel_errors]))</span>
+<span id="cb51-13"><a href="#cb51-13" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb51-14"><a href="#cb51-14" aria-hidden="true" tabindex="-1"></a>noise_err <span class="op">=</span> torch.stack(noise_err)</span>
+<span id="cb51-15"><a href="#cb51-15" aria-hidden="true" tabindex="-1"></a>noise_err_std <span class="op">=</span> torch.stack(noise_err_std)</span>
+<span id="cb51-16"><a href="#cb51-16" aria-hidden="true" tabindex="-1"></a>x <span class="op">=</span> torch.stack(x)</span>
+<span id="cb51-17"><a href="#cb51-17" aria-hidden="true" tabindex="-1"></a>counts <span class="op">=</span> torch.stack(counts)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"5633f58a7a554f5baff5f1fb1ff0c79a","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+</div>
+<p>Let’s save these to process later.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb52"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a>fig_name <span class="op">=</span> <span class="st">"noise_analysis"</span></span>
+<span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a>plot_path <span class="op">=</span> (FIG_PATH<span class="op">/</span>fig_name).with_suffix(<span class="st">".pkl"</span>)</span>
+<span id="cb52-3"><a href="#cb52-3" aria-hidden="true" tabindex="-1"></a>plot_data <span class="op">=</span> (noise_err, noise_err_std, x, counts)</span>
+<span id="cb52-4"><a href="#cb52-4" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> <span class="bu">open</span>(plot_path, <span class="st">'wb'</span>) <span class="im">as</span> f:</span>
+<span id="cb52-5"><a href="#cb52-5" aria-hidden="true" tabindex="-1"></a>    pickle.dump(plot_data, f, protocol<span class="op">=</span>pickle.HIGHEST_PROTOCOL)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>And let’s see what we got!</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb53"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a>sem <span class="op">=</span> noise_err_std<span class="op">/</span>counts.sqrt().unsqueeze(<span class="op">-</span><span class="dv">1</span>)</span>
+<span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb53-3"><a href="#cb53-3" aria-hidden="true" tabindex="-1"></a>plt.figure(figsize<span class="op">=</span>(<span class="fl">1.5</span><span class="op">*</span>fig_size, fig_size))</span>
+<span id="cb53-4"><a href="#cb53-4" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> k, (err, s) <span class="kw">in</span> <span class="bu">enumerate</span>(<span class="bu">zip</span>(noise_err.T, sem.T)):</span>
+<span id="cb53-5"><a href="#cb53-5" aria-hidden="true" tabindex="-1"></a>    plt.semilogx(<span class="dv">10</span><span class="op">**</span>x, err, <span class="st">'-'</span>, linewidth<span class="op">=</span><span class="fl">2.</span>, c<span class="op">=</span>colors[k], label<span class="op">=</span>labels[k])</span>
+<span id="cb53-6"><a href="#cb53-6" aria-hidden="true" tabindex="-1"></a>    plt.fill_between(<span class="dv">10</span><span class="op">**</span>x, err <span class="op">-</span> s, err <span class="op">+</span> s, alpha<span class="op">=</span><span class="fl">0.5</span>, color <span class="op">=</span> colors[k])</span>
+<span id="cb53-7"><a href="#cb53-7" aria-hidden="true" tabindex="-1"></a>plt.legend(fontsize<span class="op">=</span><span class="dv">14</span>)</span>
+<span id="cb53-8"><a href="#cb53-8" aria-hidden="true" tabindex="-1"></a>plt.grid(alpha <span class="op">=</span> alpha_grid)</span>
+<span id="cb53-9"><a href="#cb53-9" aria-hidden="true" tabindex="-1"></a>plt.xlim([<span class="dv">10</span><span class="op">**</span>(<span class="op">-</span><span class="fl">4.5</span>), <span class="dv">30</span>])</span>
+<span id="cb53-10"><a href="#cb53-10" aria-hidden="true" tabindex="-1"></a>plt.ylim([<span class="fl">0.15</span>, <span class="fl">1.</span>])</span>
+<span id="cb53-11"><a href="#cb53-11" aria-hidden="true" tabindex="-1"></a>plt.tick_params(labelsize<span class="op">=</span><span class="dv">14</span>)</span>
+<span id="cb53-12"><a href="#cb53-12" aria-hidden="true" tabindex="-1"></a>plt.xlabel(<span class="vs">r"$\sigma_</span><span class="sc">{noise}</span><span class="vs">/D$"</span>, fontsize<span class="op">=</span><span class="dv">16</span>)</span>
+<span id="cb53-13"><a href="#cb53-13" aria-hidden="true" tabindex="-1"></a>plt.ylabel(<span class="st">"Relative error"</span>, fontsize<span class="op">=</span><span class="dv">16</span>)</span>
+<span id="cb53-14"><a href="#cb53-14" aria-hidden="true" tabindex="-1"></a>plt.tick_params(labelsize<span class="op">=</span><span class="dv">14</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<p><img src="01_analysis_bm_files/figure-html/cell-52-output-1.png" class="img-fluid"></p>
+</div>
+</div>
+<p>STEP is significantly more resilient to localization noise than the TA-MSD method. It only gets outperformed at noise levels that are greater than the actual signal, which are unrealistic experimental conditions.</p>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script type="application/vnd.jupyter.widget-state+json">
+{"state":{},"version_major":2,"version_minor":0}
+</script>
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>
