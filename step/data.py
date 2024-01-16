@@ -351,7 +351,7 @@ def get_segmentation_dls(
     **kwargs
     )->DataLoaders:
     "Obtain `DataLoaders` from dataset filtered by `models` and `exps` to predict `target`."
-    ds = load_dataset(bm=bm, **kwargs)
+    ds = load_dataset(n_change=n_change, bm=bm, **kwargs)
     if bm: target = 'y_exp'
     if models is not None or exps is not None: ds = _filter_dataset(ds, models, exps, n_change)
     if size is not None and size <= ds.shape[0]: ds = _subsample_dataset(ds, size)
